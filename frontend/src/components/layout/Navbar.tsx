@@ -4,14 +4,12 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { UserRole } from "@/types";
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout, quickDemoLogin } = useAuth();
+  const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [switcherOpen, setSwitcherOpen] = useState(false);
 
   // Light / Dark mode state
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -69,12 +67,9 @@ export function Navbar() {
 
   const links = getLinks();
 
-  const handleRoleSwitch = async (role: UserRole) => {
-    setSwitcherOpen(false);
-    await quickDemoLogin(role);
-    if (role === "admin") router.push("/admin");
-    else if (role === "worker") router.push("/worker");
-    else router.push("/");
+  const handleSignOut = () => {
+    logout();
+    router.push("/login");
   };
 
   return (
@@ -119,7 +114,7 @@ export function Navbar() {
           })}
         </div>
 
-        {/* Right side: theme toggle + user + role switcher + hamburger */}
+        {/* Right side: theme toggle + user profile badge & sign out + hamburger */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {/* Light / Dark Mode Toggle Button */}
           <button
@@ -139,16 +134,14 @@ export function Navbar() {
           </button>
 
           {user ? (
-            <div style={{ position: "relative" }}>
-              <div
-                onClick={() => setSwitcherOpen(!switcherOpen)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  background: "rgba(255,255,255,0.15)", borderRadius: 100,
-                  padding: "6px 12px 6px 8px", cursor: "pointer",
-                  border: "1px solid rgba(255,255,255,0.25)",
-                }}
-              >
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {/* User badge */}
+              <div style={{
+                display: "flex", alignItems: "center", gap: 8,
+                background: "rgba(255,255,255,0.15)", borderRadius: 100,
+                padding: "6px 12px 6px 8px",
+                border: "1px solid rgba(255,255,255,0.25)",
+              }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: "50%",
                   background: user.role === "admin" ? "#dc2626" : user.role === "worker" ? "#d97706" : "#2563eb",
@@ -164,68 +157,24 @@ export function Navbar() {
                     {user.role} {user.role === "student" && user.rollNo ? `(${user.rollNo})` : ""}
                   </div>
                 </div>
-                <span style={{ color: "#bfdbfe", fontSize: 10 }}>▼</span>
               </div>
 
-              {/* Role Switcher & Logout Dropdown */}
-              {switcherOpen && (
-                <div style={{
-                  position: "absolute", top: "115%", right: 0, width: 220,
-                  background: "var(--bg-card, #fff)", borderRadius: 12, boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
-                  border: "1px solid var(--border-main, #e2e8f0)", zIndex: 100, overflow: "hidden", padding: 6,
-                }}>
-                  <div style={{ padding: "8px 10px", fontSize: 11, fontWeight: 700, color: "var(--text-muted, #9ca3af)", textTransform: "uppercase" }}>
-                    Switch Demo Role
-                  </div>
-                  <button
-                    onClick={() => handleRoleSwitch("student")}
-                    style={{
-                      width: "100%", padding: "8px 10px", textAlign: "left", background: user.role === "student" ? "rgba(37,99,235,0.1)" : "transparent",
-                      border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, color: "#2563eb", cursor: "pointer",
-                      display: "flex", alignItems: "center", gap: 8,
-                    }}
-                  >
-                    <span>🎓</span> Student Portal
-                  </button>
-                  <button
-                    onClick={() => handleRoleSwitch("worker")}
-                    style={{
-                      width: "100%", padding: "8px 10px", textAlign: "left", background: user.role === "worker" ? "rgba(217,119,6,0.1)" : "transparent",
-                      border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, color: "#d97706", cursor: "pointer",
-                      display: "flex", alignItems: "center", gap: 8,
-                    }}
-                  >
-                    <span>🛠️</span> Worker/Staff Portal
-                  </button>
-                  <button
-                    onClick={() => handleRoleSwitch("admin")}
-                    style={{
-                      width: "100%", padding: "8px 10px", textAlign: "left", background: user.role === "admin" ? "rgba(220,38,38,0.1)" : "transparent",
-                      border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, color: "#dc2626", cursor: "pointer",
-                      display: "flex", alignItems: "center", gap: 8,
-                    }}
-                  >
-                    <span>⚙️</span> Admin Portal
-                  </button>
-
-                  <div style={{ borderTop: "1px solid var(--border-main, #f1f5f9)", margin: "6px 0" }} />
-
-                  <button
-                    onClick={() => {
-                      setSwitcherOpen(false);
-                      logout();
-                      router.push("/login");
-                    }}
-                    style={{
-                      width: "100%", padding: "8px 10px", textAlign: "left", background: "transparent",
-                      border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, color: "var(--text-muted, #6b7280)", cursor: "pointer",
-                      display: "flex", alignItems: "center", gap: 8,
-                    }}
-                  >
-                    <span>🚪</span> Sign Out
-                  </button>
-                </div>
-              )}
+              {/* Direct Sign Out Button */}
+              <button
+                onClick={handleSignOut}
+                title="Sign Out"
+                style={{
+                  background: "rgba(255,255,255,0.18)",
+                  border: "1px solid rgba(255,255,255,0.3)",
+                  color: "#fff", borderRadius: 100,
+                  padding: "6px 12px", fontSize: 12, fontWeight: 700,
+                  cursor: "pointer", transition: "all 0.15s",
+                  display: "flex", alignItems: "center", gap: 6,
+                }}
+              >
+                <span>🚪</span>
+                <span className="nav-user-name">Sign Out</span>
+              </button>
             </div>
           ) : (
             <Link href="/login" style={{ textDecoration: "none" }}>
@@ -273,6 +222,21 @@ export function Navbar() {
             </Link>
           );
         })}
+        {user && (
+          <div
+            onClick={() => {
+              setMenuOpen(false);
+              handleSignOut();
+            }}
+            style={{
+              padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: 600,
+              color: "#fca5a5", background: "rgba(239,68,68,0.15)",
+              cursor: "pointer", marginTop: 4, display: "flex", alignItems: "center", gap: 8,
+            }}
+          >
+            🚪 Sign Out
+          </div>
+        )}
       </div>
     </nav>
   );

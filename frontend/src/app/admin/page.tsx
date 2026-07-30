@@ -158,23 +158,22 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="stats-grid" style={{ marginBottom: 24 }}>
+      {/* KPI Cards (No Star Rating Feature) */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, marginBottom: 24 }}>
         {[
           { label: "Total Complaints", value: analytics?.stats?.total ?? 0, color: "#6366f1", icon: "📋" },
           { label: "SLA Compliance Rate", value: `${analytics?.stats?.slaComplianceRate ?? 100}%`, color: "#10b981", icon: "⏱️" },
           { label: "Escalated Issues", value: analytics?.stats?.escalated ?? 0, color: "#ef4444", icon: "🚨" },
-          { label: "Avg Rating (Stars)", value: `⭐ ${analytics?.stats?.avgRating ?? 5.0}`, color: "#f59e0b", icon: "⭐" },
         ].map((s) => (
-          <div key={s.label} className="card" style={{ padding: "18px 16px", textAlign: "center", borderTop: `4px solid ${s.color}` }}>
+          <div key={s.label} className="card" style={{ padding: "20px 16px", textAlign: "center", borderTop: `4px solid ${s.color}` }}>
             <div style={{ fontSize: 24, marginBottom: 4 }}>{s.icon}</div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 12, color: "var(--text-muted, #64748b)", marginTop: 2 }}>{s.label}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
+            <div style={{ fontSize: 13, color: "var(--text-muted, #64748b)", marginTop: 2, fontWeight: 600 }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      {/* Analytics / Overview View (No Visual Charts) */}
+      {/* Analytics / Overview View */}
       {activeTab === "analytics" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           {/* Categorization & Priority Data Metrics */}
@@ -225,10 +224,10 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* Worker Leaderboard */}
+          {/* Worker Leaderboard (Without Service Rating Column) */}
           <div className="card" style={{ padding: "20px" }}>
             <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "var(--text-heading, #1e293b)" }}>
-              🏆 Maintenance Staff Performance Leaderboard
+              🏆 Maintenance Staff Overview
             </h3>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -237,8 +236,7 @@ export default function AdminPage() {
                     <th style={{ padding: "10px 14px" }}>Technician</th>
                     <th style={{ padding: "10px 14px" }}>Department</th>
                     <th style={{ padding: "10px 14px" }}>Assigned Jobs</th>
-                    <th style={{ padding: "10px 14px" }}>Resolved</th>
-                    <th style={{ padding: "10px 14px" }}>Service Rating</th>
+                    <th style={{ padding: "10px 14px" }}>Resolved Jobs</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -250,9 +248,6 @@ export default function AdminPage() {
                       <td style={{ padding: "12px 14px", color: "var(--text-muted, #475569)" }}>{w.department}</td>
                       <td style={{ padding: "12px 14px", fontWeight: 600 }}>{w.assignedCount}</td>
                       <td style={{ padding: "12px 14px", fontWeight: 700, color: "#10b981" }}>{w.resolvedCount}</td>
-                      <td style={{ padding: "12px 14px", fontWeight: 700, color: "#f59e0b" }}>
-                        ⭐ {w.avgRating} / 5.0
-                      </td>
                     </tr>
                   ))}
                 </tbody>
