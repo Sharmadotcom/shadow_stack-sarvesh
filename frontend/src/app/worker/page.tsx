@@ -19,7 +19,7 @@ export default function WorkerPage() {
 
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"pending" | "resolved">("pending");
+  const [activeTab, setActiveTab] = useState<"stack" | "assigned" | "resolved">("stack");
   const [noteMap, setNoteMap] = useState<Record<string, string>>({});
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
@@ -55,6 +55,20 @@ export default function WorkerPage() {
     }
   };
 
+  const handleAcceptTask = async (complaintId: string) => {
+    setUpdatingId(complaintId);
+    try {
+      await api.acceptTask(complaintId);
+      toast.success(`Task ${complaintId} accepted & added to your assigned work orders!`);
+      await fetchWorkerTasks();
+      setActiveTab("assigned");
+    } catch (err: any) {
+      toast.error("Failed to accept task: " + err.message);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const handleStatusChange = async (complaintId: string, newStatus: Status) => {
     setUpdatingId(complaintId);
     try {
@@ -69,19 +83,32 @@ export default function WorkerPage() {
     }
   };
 
-  const pendingTasks = complaints.filter(
-    (c) => c.status === "open" || c.status === "assigned" || c.status === "in_progress" || c.status === "escalated"
-  );
-  const resolvedTasks = complaints.filter(
-    (c) => c.status === "resolved" || c.status === "closed"
+  // 1. Unassigned Ticket Stack matching worker's trade
+  const unassignedStack = complaints.filter(
+    (c) => !(c.assignedToId || c.assignedTo?.id) && c.status !== "resolved" && c.status !== "closed"
   );
 
-  const displayed = activeTab === "pending" ? pendingTasks : resolvedTasks;
+  // 2. Tasks explicitly assigned to this worker
+  const myAssignedTasks = complaints.filter(
+    (c) => ((c.assignedToId === user?.id) || (c.assignedTo?.id === user?.id)) && (c.status === "open" || c.status === "assigned" || c.status === "in_progress" || c.status === "escalated")
+  );
+
+  // 3. Completed Tasks by this worker
+  const resolvedTasks = complaints.filter(
+    (c) => ((c.assignedToId === user?.id) || (c.assignedTo?.id === user?.id)) && (c.status === "resolved" || c.status === "closed")
+  );
+
+  const displayed =
+    activeTab === "stack"
+      ? unassignedStack
+      : activeTab === "assigned"
+      ? myAssignedTasks
+      : resolvedTasks;
 
   if (authLoading || loading) {
     return (
       <div style={{ textAlign: "center", padding: "60px 0", color: "#64748b" }}>
-        <div style={{ fontWeight: 600 }}>Loading assigned maintenance work orders...</div>
+        <div style={{ fontWeight: 600 }}>Loading maintenance ticket stack & work orders...</div>
       </div>
     );
   }
@@ -105,8 +132,12 @@ export default function WorkerPage() {
           </div>
           <div style={{ display: "flex", gap: 12 }}>
             <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", textAlign: "center" }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#f59e0b" }}>{pendingTasks.length}</div>
-              <div style={{ fontSize: 11, color: "#cbd5e1" }}>Pending Jobs</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#3b82f6" }}>{unassignedStack.length}</div>
+              <div style={{ fontSize: 11, color: "#cbd5e1" }}>Available Stack</div>
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", textAlign: "center" }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#f59e0b" }}>{myAssignedTasks.length}</div>
+              <div style={{ fontSize: 11, color: "#cbd5e1" }}>My Active Tasks</div>
             </div>
             <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", textAlign: "center" }}>
               <div style={{ fontSize: 20, fontWeight: 800, color: "#10b981" }}>{resolvedTasks.length}</div>
@@ -117,18 +148,30 @@ export default function WorkerPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+      <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
         <button
-          onClick={() => setActiveTab("pending")}
+          onClick={() => setActiveTab("stack")}
           style={{
             padding: "10px 20px", borderRadius: 10, fontSize: 14, fontWeight: 700,
             border: "1.5px solid", cursor: "pointer",
-            borderColor: activeTab === "pending" ? "#1e40af" : "#e2e8f0",
-            background: activeTab === "pending" ? "#1e40af" : "#fff",
-            color: activeTab === "pending" ? "#fff" : "#475569",
+            borderColor: activeTab === "stack" ? "#2563eb" : "#e2e8f0",
+            background: activeTab === "stack" ? "#2563eb" : "#fff",
+            color: activeTab === "stack" ? "#fff" : "#475569",
           }}
         >
-          Active Work Orders ({pendingTasks.length})
+          Available Ticket Stack ({unassignedStack.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("assigned")}
+          style={{
+            padding: "10px 20px", borderRadius: 10, fontSize: 14, fontWeight: 700,
+            border: "1.5px solid", cursor: "pointer",
+            borderColor: activeTab === "assigned" ? "#1e40af" : "#e2e8f0",
+            background: activeTab === "assigned" ? "#1e40af" : "#fff",
+            color: activeTab === "assigned" ? "#fff" : "#475569",
+          }}
+        >
+          My Active Tasks ({myAssignedTasks.length})
         </button>
         <button
           onClick={() => setActiveTab("resolved")}
@@ -140,7 +183,7 @@ export default function WorkerPage() {
             color: activeTab === "resolved" ? "#fff" : "#475569",
           }}
         >
-          Completed Tasks ({resolvedTasks.length})
+          Completed ({resolvedTasks.length})
         </button>
       </div>
 
@@ -149,9 +192,17 @@ export default function WorkerPage() {
         {displayed.length === 0 ? (
           <div className="card" style={{ padding: "48px", textAlign: "center", color: "#94a3b8" }}>
             <div style={{ fontWeight: 700, fontSize: 16, color: "#334155" }}>
-              {activeTab === "pending" ? "No active work orders for your trade specialty!" : "No completed tasks yet."}
+              {activeTab === "stack"
+                ? "No unassigned tickets in your category stack!"
+                : activeTab === "assigned"
+                ? "You currently have no active assigned tasks."
+                : "No completed tasks yet."}
             </div>
-            <div style={{ fontSize: 13, marginTop: 4 }}>New student tickets matching your category will appear here automatically.</div>
+            <div style={{ fontSize: 13, marginTop: 4 }}>
+              {activeTab === "stack"
+                ? "When students raise new issues matching your specialty, they will appear in this stack for you to accept."
+                : "Accept a task from the available stack to start working."}
+            </div>
           </div>
         ) : (
           displayed.map((c) => (
@@ -181,6 +232,15 @@ export default function WorkerPage() {
                     }}>
                       {c.category}
                     </span>
+                    {!c.assignedToId && !c.assignedTo?.id && (
+                      <span style={{
+                        padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 800,
+                        textTransform: "uppercase", background: "#fef3c7",
+                        color: "#d97706", border: "1px solid #fcd34d",
+                      }}>
+                        Unassigned Stack
+                      </span>
+                    )}
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#64748b" }}>{c.id}</span>
                   </div>
                   <h3 style={{ margin: "4px 0", fontSize: 17, fontWeight: 800, color: "#0f172a" }}>
@@ -234,8 +294,26 @@ export default function WorkerPage() {
                 </div>
               )}
 
-              {/* Worker Action controls */}
-              {activeTab === "pending" && (
+              {/* Action Controls based on Tab */}
+              {activeTab === "stack" ? (
+                <div style={{ background: "#f0fdf4", borderRadius: 12, padding: "14px", marginTop: 12, border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>Available Task in your Trade Stack</div>
+                    <div style={{ fontSize: 12, color: "#166534", marginTop: 2 }}>Accept this ticket to assign it to yourself and start working.</div>
+                  </div>
+                  <button
+                    onClick={() => handleAcceptTask(c.id)}
+                    disabled={updatingId === c.id}
+                    style={{
+                      padding: "10px 20px", background: "#16a34a", color: "#fff",
+                      border: "none", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
+                      boxShadow: "0 2px 8px rgba(22, 163, 74, 0.3)",
+                    }}
+                  >
+                    {updatingId === c.id ? "Accepting..." : "✓ Accept & Claim Task"}
+                  </button>
+                </div>
+              ) : activeTab === "assigned" ? (
                 <div style={{ background: "#eff6ff", borderRadius: 12, padding: "14px", marginTop: 12, border: "1px solid #bfdbfe" }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: "#1e40af", marginBottom: 8 }}>
                     Worker Actions & Updates
@@ -283,7 +361,7 @@ export default function WorkerPage() {
                     </Link>
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
           ))
         )}

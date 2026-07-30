@@ -70,6 +70,7 @@ export interface Complaint {
   status: Status;
   submittedBy: User;
   assignedTo?: User;
+  assignedToId?: string;
   location?: string;
   attachments?: string[];
   slaDeadline: string; // ISO date string

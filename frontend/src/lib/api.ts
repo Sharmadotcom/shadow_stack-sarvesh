@@ -136,6 +136,11 @@ export const api = {
       body: JSON.stringify({ workerId }),
     }),
 
+  acceptTask: (id: string) =>
+    fetchAPI(`/complaints/${id}/accept`, {
+      method: "PATCH",
+    }),
+
   escalateComplaint: (id: string, priority?: string, reason?: string) =>
     fetchAPI(`/complaints/${id}/escalate`, {
       method: "PATCH",

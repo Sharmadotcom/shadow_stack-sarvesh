@@ -236,11 +236,8 @@ router.patch("/:id/status", authenticateToken, async (req: AuthenticatedRequest,
     }
 
     if (user.role === "worker") {
-      const matchingCats = getMatchingCategoriesForWorker(user.department);
-      const isAssigned = existing.assignedToId === user.id;
-      const isMatchingCategory = matchingCats.includes(existing.category.toLowerCase());
-      if (!isAssigned && !isMatchingCategory) {
-        return res.status(403).json({ error: "Access Denied: You can only update tickets matching your specialty." });
+      if (existing.assignedToId !== user.id) {
+        return res.status(400).json({ error: "Please accept this task from the stack first before updating its progress." });
       }
     }
 
@@ -251,10 +248,6 @@ router.patch("/:id/status", authenticateToken, async (req: AuthenticatedRequest,
       status,
       updatedAt: now,
     };
-
-    if (user.role === "worker" && !existing.assignedToId) {
-      updateData.assignedToId = user.id;
-    }
 
     if (status === "resolved" && !existing.resolvedAt) {
       updateData.resolvedAt = now;
@@ -293,16 +286,75 @@ router.patch("/:id/status", authenticateToken, async (req: AuthenticatedRequest,
   }
 });
 
-// 5. Assign Complaint to Worker (Admin Only)
-router.patch("/:id/assign", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+// 5. Accept / Claim Task from Stack (Worker)
+router.patch("/:id/accept", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const user = req.user!;
-    if (user.role !== "admin") {
-      return res.status(403).json({ error: "Only admins can assign complaints to staff" });
+    if (user.role !== "worker") {
+      return res.status(403).json({ error: "Only maintenance workers can accept tasks from the stack" });
     }
 
     const { id } = req.params;
-    const { workerId } = req.body;
+    const existing = await prisma.complaint.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ error: "Complaint not found" });
+    }
+
+    const matchingCats = getMatchingCategoriesForWorker(user.department);
+    const isMatchingCategory = matchingCats.includes(existing.category.toLowerCase());
+    if (!isMatchingCategory) {
+      return res.status(403).json({ error: "Access Denied: Ticket category does not match your trade specialty." });
+    }
+
+    if (existing.assignedToId && existing.assignedToId !== user.id) {
+      return res.status(400).json({ error: "This task has already been claimed by another worker or assigned by Admin." });
+    }
+
+    const updated = await prisma.complaint.update({
+      where: { id },
+      data: {
+        assignedToId: user.id,
+        status: existing.status === "open" ? "assigned" : existing.status,
+        updatedAt: new Date(),
+      },
+      include: {
+        submittedBy: true,
+        assignedTo: true,
+      },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        complaintId: id,
+        changedById: user.id,
+        oldStatus: existing.status,
+        newStatus: updated.status,
+        comment: `Task accepted from category stack by worker ${user.name} (${user.department || "Staff"})`,
+      },
+    });
+
+    return res.json({
+      ...updated,
+      attachments: updated.attachments ? JSON.parse(updated.attachments) : [],
+    });
+  } catch (error) {
+    console.error("Accept task error:", error);
+    return res.status(500).json({ error: "Failed to accept task" });
+  }
+});
+
+// 6. Assign Complaint to Worker (Admin or Worker Self-Assign)
+router.patch("/:id/assign", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const user = req.user!;
+    const { id } = req.params;
+    let workerId = req.body?.workerId;
+
+    if (user.role === "worker") {
+      workerId = user.id;
+    } else if (user.role !== "admin") {
+      return res.status(403).json({ error: "Permission denied" });
+    }
 
     const worker = await prisma.user.findUnique({ where: { id: workerId } });
     if (!worker) {
