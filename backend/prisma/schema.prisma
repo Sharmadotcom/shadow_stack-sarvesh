@@ -1,0 +1,90 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String      @id @default(uuid())
+  email       String      @unique
+  password    String?
+  name        String
+  role        String      // "student" | "worker" | "admin"
+  rollNo      String?
+  department  String?
+  hostel      String?
+  avatar      String?
+  googleId    String?     @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  submittedComplaints Complaint[] @relation("SubmittedComplaints")
+  assignedComplaints  Complaint[] @relation("AssignedComplaints")
+  auditLogs           AuditLog[]  @relation("UserAuditLogs")
+  ratings             Rating[]    @relation("UserRatings")
+}
+
+model Category {
+  id        String   @id
+  label     String
+  icon      String
+  slaHours  Int
+  color     String
+  bg        String
+}
+
+model Complaint {
+  id               String     @id
+  title            String
+  description      String
+  category         String
+  priority         String     // "low" | "medium" | "high" | "critical"
+  status           String     // "open" | "assigned" | "in_progress" | "resolved" | "closed" | "escalated"
+  location         String?
+  attachments      String?    // JSON string array of URLs
+  slaDeadline      DateTime
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  resolvedAt       DateTime?
+  closedAt         DateTime?
+  isEscalated      Boolean    @default(false)
+  escalatedAt      DateTime?
+  escalationReason String?
+
+  submittedById    String
+  submittedBy      User       @relation("SubmittedComplaints", fields: [submittedById], references: [id])
+
+  assignedToId     String?
+  assignedTo       User?      @relation("AssignedComplaints", fields: [assignedToId], references: [id])
+
+  auditLogs        AuditLog[]
+  ratings          Rating[]
+}
+
+model Rating {
+  id          String   @id @default(uuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     User     @relation("UserRatings", fields: [studentId], references: [id])
+  rating      Int      // 1 to 5
+  feedback    String?
+  createdAt   DateTime @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  changedById String
+  changedBy   User     @relation("UserAuditLogs", fields: [changedById], references: [id])
+  oldStatus   String?
+  newStatus   String?
+  oldPriority String?
+  newPriority String?
+  comment     String?
+  timestamp   DateTime @default(now())
+}
