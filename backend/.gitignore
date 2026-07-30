@@ -1,8 +1,6 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
+# ─── Dependencies ─────────────────────────────────────────────────────────────
+node_modules/
+.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -10,32 +8,53 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
-/.next/
+# ─── Next.js build output ─────────────────────────────────────────────────────
+.next/
 /out/
+/build/
+next-env.d.ts
 
-# production
-/build
+# ─── Environment variables (NEVER commit secrets) ─────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# .env.example is intentionally NOT ignored (safe template)
 
-# misc
-.DS_Store
-*.pem
+# ─── Database ─────────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+prisma/dev.db
+prisma/test.db
+prisma/migrations/dev/
 
-# debug
+# ─── File uploads ─────────────────────────────────────────────────────────────
+public/uploads/
+
+# ─── TypeScript ───────────────────────────────────────────────────────────────
+*.tsbuildinfo
+.seed-out/
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
 
-# env files (can opt-in for committing if needed)
-.env*
+# ─── Test / debug artifacts ───────────────────────────────────────────────────
+cookies.txt
+*.cookies.txt
+coverage/
 
-# vercel
+# ─── OS & editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.pem
 .vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+.idea/
+.vscode/
+*.swp
+*.swo
