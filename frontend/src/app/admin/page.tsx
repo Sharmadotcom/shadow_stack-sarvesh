@@ -14,7 +14,7 @@ const statusColor: Record<string, string> = {
 };
 const statusLabel: Record<string, string> = {
   open: "Open", assigned: "Assigned", in_progress: "In Progress",
-  resolved: "Resolved", closed: "Closed", escalated: "🚨 Escalated",
+  resolved: "Resolved", closed: "Closed", escalated: "Escalated",
 };
 const priorityColor: Record<string, string> = {
   low: "#6b7280", medium: "#3b82f6", high: "#f59e0b", critical: "#ef4444",
@@ -105,7 +105,7 @@ export default function AdminPage() {
   if (authLoading || loading) {
     return (
       <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-muted, #64748b)" }}>
-        <div style={{ fontSize: 36, marginBottom: 12 }}>⚙️</div>
+        <div style={{ fontSize: 36, marginBottom: 12 }}></div>
         <div style={{ fontWeight: 600 }}>Loading Admin Operations Panel...</div>
       </div>
     );
@@ -130,7 +130,7 @@ export default function AdminPage() {
       {/* Title & Tabs */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <div>
-          <h1 style={{ margin: "0 0 4px", fontSize: 24, fontWeight: 800, color: "var(--text-heading, #0f172a)" }}>⚙️ Admin Command Center</h1>
+          <h1 style={{ margin: "0 0 4px", fontSize: 24, fontWeight: 800, color: "var(--text-heading, #0f172a)" }}> Admin Command Center</h1>
           <p style={{ margin: 0, color: "var(--text-muted, #64748b)", fontSize: 14 }}>Real-time stats, SLA tracking, worker allocation & complaint escalations</p>
         </div>
 
@@ -143,7 +143,7 @@ export default function AdminPage() {
               color: activeTab === "analytics" ? "#fff" : "var(--text-muted, #475569)",
             }}
           >
-            📊 System Overview
+            System Overview
           </button>
           <button
             onClick={() => setActiveTab("manage")}
@@ -153,7 +153,7 @@ export default function AdminPage() {
               color: activeTab === "manage" ? "#fff" : "var(--text-muted, #475569)",
             }}
           >
-            📋 Manage Complaints ({complaints.length})
+            Manage Complaints ({complaints.length})
           </button>
         </div>
       </div>
@@ -162,8 +162,8 @@ export default function AdminPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, marginBottom: 24 }}>
         {[
           { label: "Total Complaints", value: analytics?.stats?.total ?? 0, color: "#6366f1", icon: "📋" },
-          { label: "SLA Compliance Rate", value: `${analytics?.stats?.slaComplianceRate ?? 100}%`, color: "#10b981", icon: "⏱️" },
-          { label: "Escalated Issues", value: analytics?.stats?.escalated ?? 0, color: "#ef4444", icon: "🚨" },
+          { label: "SLA Compliance Rate", value: `${analytics?.stats?.slaComplianceRate ?? 100}%`, color: "#10b981"},
+          { label: "Escalated Issues", value: analytics?.stats?.escalated ?? 0, color: "#ef4444"},
         ].map((s) => (
           <div key={s.label} className="card" style={{ padding: "20px 16px", textAlign: "center", borderTop: `4px solid ${s.color}` }}>
             <div style={{ fontSize: 24, marginBottom: 4 }}>{s.icon}</div>
@@ -181,7 +181,7 @@ export default function AdminPage() {
             {/* Category Breakdown Metric Table */}
             <div className="card" style={{ padding: "20px" }}>
               <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "var(--text-heading, #1e293b)" }}>
-                📂 Issue Category Breakdown
+                Issue Category Breakdown
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {categoryBreakdown.length === 0 ? (
@@ -202,7 +202,7 @@ export default function AdminPage() {
             {/* Priority Level Metric Table */}
             <div className="card" style={{ padding: "20px" }}>
               <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "var(--text-heading, #1e293b)" }}>
-                ⚡ Priority Distribution
+                Priority Distribution
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {priorityBreakdown.length === 0 ? (
@@ -227,7 +227,7 @@ export default function AdminPage() {
           {/* Worker Leaderboard (Without Service Rating Column) */}
           <div className="card" style={{ padding: "20px" }}>
             <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "var(--text-heading, #1e293b)" }}>
-              🏆 Maintenance Staff Overview
+              Maintenance Staff Overview
             </h3>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
