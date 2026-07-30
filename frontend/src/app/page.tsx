@@ -33,6 +33,7 @@ export default function HomePage() {
   const [department, setDepartment] = useState("");
   const [hostel, setHostel] = useState("");
   const [formLoading, setFormLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Student Dashboard state (for logged-in student)
   const [complaints, setComplaints] = useState<Complaint[]>([]);
@@ -111,10 +112,9 @@ export default function HomePage() {
   };
 
   const handleGoogleAuth = async () => {
-    setFormLoading(true);
+    setGoogleLoading(true);
     const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "446874210660-cad4dcopa3jo4kj5cptsa96o2u5tbcid.apps.googleusercontent.com";
 
-    // Try Google Identity Services Popup first if loaded
     if (typeof window !== "undefined" && (window as any).google?.accounts?.id) {
       try {
         const google = (window as any).google;
@@ -126,7 +126,7 @@ export default function HomePage() {
               if (loggedUser.role !== activePortal) {
                 logout();
                 toast.error(`Role Mismatch: Your account is registered as '${loggedUser.role.toUpperCase()}'. Please select the ${loggedUser.role.toUpperCase()} Portal card.`);
-                setFormLoading(false);
+                setGoogleLoading(false);
                 return;
               }
               toast.success("Successfully authenticated with Google OAuth!");
@@ -136,68 +136,25 @@ export default function HomePage() {
             } catch (err: any) {
               toast.error(err.message || "Google OAuth authentication failed.");
             } finally {
-              setFormLoading(false);
+              setGoogleLoading(false);
             }
           },
         });
 
         google.accounts.id.prompt((notification: any) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // Prompt fallback if popups are suppressed
-            fallbackGoogleAuth();
+            setGoogleLoading(false);
+            toast.error("Google Sign-In is not available right now. Please use your campus email and password below.");
           }
         });
         return;
       } catch (e) {
-        console.warn("Google GSI error, using fallback:", e);
+        console.warn("Google GSI error:", e);
       }
     }
 
-    fallbackGoogleAuth();
-  };
-
-  const fallbackGoogleAuth = async () => {
-    try {
-      let targetEmail = email;
-      if (!targetEmail) {
-        if ((activePortal as string) === "admin") {
-          targetEmail = "sharmasarvsh0303@gmail.com";
-        } else {
-          const userPrompt = prompt(`Enter your Google Account email to sign in as ${activePortal.toUpperCase()}:`, `${activePortal}@campus.edu`);
-          if (!userPrompt) {
-            setFormLoading(false);
-            return;
-          }
-          targetEmail = userPrompt;
-        }
-      }
-
-      const mockGoogleCredential = {
-        email: targetEmail,
-        name: name || targetEmail.split("@")[0],
-        sub: `google-uid-${Date.now()}`,
-      };
-
-      const loggedUser = await googleLogin(mockGoogleCredential, activePortal);
-
-      if (loggedUser.role !== activePortal) {
-        logout();
-        toast.error(
-          `Role Mismatch: Your account is registered as '${loggedUser.role.toUpperCase()}'. Please select the ${loggedUser.role.toUpperCase()} Portal card to sign in.`
-        );
-        setFormLoading(false);
-        return;
-      }
-
-      toast.success("Signed in with Google OAuth!");
-
-      if ((loggedUser.role as string) === "admin") router.push("/admin");
-      else if ((loggedUser.role as string) === "worker") router.push("/worker");
-    } catch (err: any) {
-      toast.error(err.message || "Google sign-in error");
-    } finally {
-      setFormLoading(false);
-    }
+    setGoogleLoading(false);
+    toast.error("Google Sign-In is not available. Please use your campus email and password below.");
   };
 
   if (authLoading) {
@@ -308,7 +265,7 @@ export default function HomePage() {
           <button
             type="button"
             onClick={handleGoogleAuth}
-            disabled={formLoading}
+            disabled={googleLoading || formLoading}
             style={{
               width: "100%", padding: "14px", borderRadius: 12, border: "1.5px solid #cbd5e1",
               background: "#ffffff", color: "#1e293b", fontWeight: 800, fontSize: 15,
@@ -323,7 +280,7 @@ export default function HomePage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
             </svg>
-            {formLoading ? "Authenticating with Google..." : `Sign in with Authorized Google OAuth (${activePortal.toUpperCase()})`}
+            {googleLoading ? "Authenticating with Google..." : `Sign in with Authorized Google OAuth (${activePortal.toUpperCase()})`}
           </button>
 
           {/* Admin Policy Notice */}
