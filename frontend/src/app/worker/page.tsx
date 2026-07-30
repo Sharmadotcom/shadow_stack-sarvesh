@@ -342,14 +342,14 @@ export default function WorkerPage() {
                       </button>
                     )}
                     <button
-                      onClick={() => handleStatusChange(c.id, "resolved")}
+                      onClick={() => handleStatusChange(c.id, "pending_approval")}
                       disabled={updatingId === c.id}
                       style={{
-                        padding: "8px 16px", background: "#10b981", color: "#fff",
+                        padding: "8px 16px", background: "#4f46e5", color: "#fff",
                         border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
                       }}
                     >
-                      Mark Issue Resolved
+                      {updatingId === c.id ? "Submitting..." : "Submit for Student Approval"}
                     </button>
                     <Link href={`/complaints/${c.id}`} style={{ textDecoration: "none", marginLeft: "auto" }}>
                       <button style={{

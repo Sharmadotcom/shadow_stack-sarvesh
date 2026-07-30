@@ -5,6 +5,7 @@ export type Status =
   | "open"
   | "assigned"
   | "in_progress"
+  | "pending_approval"
   | "resolved"
   | "closed"
   | "escalated";
@@ -78,6 +79,7 @@ export interface Complaint {
   updatedAt: string;
   resolvedAt?: string;
   closedAt?: string;
+  approvalRequestedAt?: string;
   isEscalated?: boolean;
   escalatedAt?: string;
   escalationReason?: string;

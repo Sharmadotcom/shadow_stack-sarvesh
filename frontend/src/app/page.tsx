@@ -10,13 +10,15 @@ import { api } from "@/lib/api";
 import { Complaint, UserRole } from "@/types";
 import { getTimeAgo } from "@/lib/utils";
 
+import { SLATimer } from "@/components/complaints/SLATimer";
+
 const statusColor: Record<string, string> = {
   open: "#3b82f6", assigned: "#8b5cf6", in_progress: "#f59e0b",
-  resolved: "#10b981", closed: "#6b7280", escalated: "#ef4444",
+  pending_approval: "#6366f1", resolved: "#10b981", closed: "#6b7280", escalated: "#ef4444",
 };
 const statusLabel: Record<string, string> = {
   open: "Open", assigned: "Assigned", in_progress: "In Progress",
-  resolved: "Resolved", closed: "Closed", escalated: "Escalated",
+  pending_approval: "Pending Approval", resolved: "Resolved", closed: "Closed", escalated: "Escalated",
 };
 
 export default function HomePage() {
@@ -499,6 +501,7 @@ export default function HomePage() {
 
   // 2. IF LOGGED IN STUDENT: Render Student Dashboard
   const recent = complaints.slice(0, 5);
+  const pendingApprovalComplaints = complaints.filter((c) => c.status === "pending_approval");
   const urgent = complaints.filter(
     (c) => c.status === "escalated" || c.priority === "critical"
   );
@@ -584,6 +587,43 @@ export default function HomePage() {
           </div>
         ))}
       </div>
+
+      {/* Pending Approval Alert Banner */}
+      {pendingApprovalComplaints.length > 0 && (
+        <div className="card" style={{
+          background: "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)", border: "1.5px solid #c7d2fe",
+          borderRadius: 16, padding: "20px 24px", marginBottom: 28,
+        }}>
+          <div style={{ fontWeight: 800, color: "#3730a3", marginBottom: 12, fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}>
+            Approval Required on Completed Work ({pendingApprovalComplaints.length})
+          </div>
+          {pendingApprovalComplaints.map((c) => (
+            <Link key={c.id} href={`/complaints/${c.id}`} style={{ textDecoration: "none" }}>
+              <div style={{
+                background: "#ffffff", borderRadius: 12, padding: "14px 18px",
+                marginBottom: 8, borderLeft: "4px solid #4f46e5", boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+                display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12,
+              }}>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 15, color: "#0f172a" }}>{c.title}</div>
+                  <div style={{ fontSize: 12, color: "#475569", marginTop: 4 }}>
+                    {c.id} · Technician: <strong>{c.assignedTo?.name || "Maintenance Staff"}</strong> · Click to review work & respond
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <SLATimer deadline={c.slaDeadline} status={c.status} approvalRequestedAt={c.approvalRequestedAt} />
+                  <button style={{
+                    padding: "8px 16px", background: "#4f46e5", color: "#fff",
+                    border: "none", borderRadius: 8, fontWeight: 800, fontSize: 13, cursor: "pointer",
+                  }}>
+                    Review & Respond →
+                  </button>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* Urgent Alert Banner */}
       {urgent.length > 0 && (

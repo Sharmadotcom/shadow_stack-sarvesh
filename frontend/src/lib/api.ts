@@ -153,6 +153,18 @@ export const api = {
       body: JSON.stringify({ rating, feedback }),
     }),
 
+  approveResolution: (id: string, rating?: number, feedback?: string) =>
+    fetchAPI(`/complaints/${id}/approve`, {
+      method: "PATCH",
+      body: JSON.stringify({ rating, feedback }),
+    }),
+
+  rejectResolution: (id: string, reason: string) =>
+    fetchAPI(`/complaints/${id}/reject`, {
+      method: "PATCH",
+      body: JSON.stringify({ reason }),
+    }),
+
   // Categories
   getCategories: () => fetchAPI("/categories", { method: "GET" }),
 

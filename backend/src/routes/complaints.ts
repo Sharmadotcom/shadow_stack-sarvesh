@@ -39,9 +39,49 @@ function getMatchingCategoriesForWorker(department: string | null | undefined): 
   return [dept, "other"];
 }
 
+async function autoProcessExpiredApprovals() {
+  try {
+    const now = new Date();
+    const eightHoursAgo = new Date(now.getTime() - 8 * 60 * 60 * 1000);
+
+    const expired = await prisma.complaint.findMany({
+      where: {
+        status: "pending_approval",
+        approvalRequestedAt: {
+          lte: eightHoursAgo,
+        },
+      },
+    });
+
+    for (const c of expired) {
+      await prisma.complaint.update({
+        where: { id: c.id },
+        data: {
+          status: "closed",
+          closedAt: now,
+          updatedAt: now,
+        },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          complaintId: c.id,
+          changedById: c.submittedById,
+          oldStatus: "pending_approval",
+          newStatus: "closed",
+          comment: "Auto-closed after 8 hours of student approval request without response (deemed satisfied).",
+        },
+      });
+    }
+  } catch (err) {
+    console.error("Error auto-processing expired approvals:", err);
+  }
+}
+
 // 1. Get List of Complaints (Role-scoped + Filterable)
 router.get("/", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
+    await autoProcessExpiredApprovals();
     const user = req.user!;
     const { status, category, priority, search } = req.query;
 
@@ -249,8 +289,10 @@ router.patch("/:id/status", authenticateToken, async (req: AuthenticatedRequest,
       updatedAt: now,
     };
 
-    if (status === "resolved" && !existing.resolvedAt) {
-      updateData.resolvedAt = now;
+    if (status === "pending_approval" || status === "resolved") {
+      updateData.status = "pending_approval";
+      updateData.approvalRequestedAt = now;
+      if (!existing.resolvedAt) updateData.resolvedAt = now;
     }
     if (status === "closed" && !existing.closedAt) {
       updateData.closedAt = now;
@@ -271,8 +313,8 @@ router.patch("/:id/status", authenticateToken, async (req: AuthenticatedRequest,
         complaintId: id,
         changedById: user.id,
         oldStatus,
-        newStatus: status,
-        comment: comment || `Status updated to '${status}' by ${user.name}`,
+        newStatus: updateData.status,
+        comment: comment || `Work completed and submitted for student approval by ${user.name}`,
       },
     });
 
@@ -283,6 +325,125 @@ router.patch("/:id/status", authenticateToken, async (req: AuthenticatedRequest,
   } catch (error) {
     console.error("Update status error:", error);
     return res.status(500).json({ error: "Failed to update complaint status" });
+  }
+});
+
+// 4a. Student Approve Resolution (Satisfied)
+router.patch("/:id/approve", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { rating, feedback } = req.body || {};
+    const user = req.user!;
+
+    const existing = await prisma.complaint.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ error: "Complaint not found" });
+    }
+
+    if (user.role === "student" && existing.submittedById !== user.id) {
+      return res.status(403).json({ error: "Only the student who submitted this issue can approve the resolution." });
+    }
+
+    const now = new Date();
+    const updated = await prisma.complaint.update({
+      where: { id },
+      data: {
+        status: "closed",
+        closedAt: now,
+        updatedAt: now,
+      },
+      include: {
+        submittedBy: true,
+        assignedTo: true,
+      },
+    });
+
+    if (rating) {
+      await prisma.rating.create({
+        data: {
+          complaintId: id,
+          studentId: user.id,
+          rating: Number(rating),
+          feedback: feedback || "Satisfied with resolution.",
+        },
+      });
+    }
+
+    await prisma.auditLog.create({
+      data: {
+        complaintId: id,
+        changedById: user.id,
+        oldStatus: existing.status,
+        newStatus: "closed",
+        comment: feedback ? `Student approved resolution (Satisfied). Rating: ${rating}/5 - ${feedback}` : "Student approved resolution (Satisfied). Ticket closed.",
+      },
+    });
+
+    return res.json({
+      ...updated,
+      attachments: updated.attachments ? JSON.parse(updated.attachments) : [],
+    });
+  } catch (error) {
+    console.error("Approve resolution error:", error);
+    return res.status(500).json({ error: "Failed to approve complaint resolution" });
+  }
+});
+
+// 4b. Student Reject Resolution (Unsatisfied -> Re-opens & returns to stack)
+router.patch("/:id/reject", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body || {};
+    const user = req.user!;
+
+    if (!reason || !reason.trim()) {
+      return res.status(400).json({ error: "Reason for dissatisfaction is required." });
+    }
+
+    const existing = await prisma.complaint.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ error: "Complaint not found" });
+    }
+
+    if (user.role === "student" && existing.submittedById !== user.id) {
+      return res.status(403).json({ error: "Only the student who submitted this issue can reject the resolution." });
+    }
+
+    const now = new Date();
+    const rejectionNote = `\n[UNSATISFIED RE-WORK REQUESTED at ${now.toLocaleString()}]: ${reason.trim()}`;
+
+    const updated = await prisma.complaint.update({
+      where: { id },
+      data: {
+        status: "open",
+        assignedToId: null, // Re-enters the unassigned trade stack!
+        approvalRequestedAt: null,
+        description: existing.description + rejectionNote,
+        updatedAt: now,
+      },
+      include: {
+        submittedBy: true,
+        assignedTo: true,
+      },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        complaintId: id,
+        changedById: user.id,
+        oldStatus: existing.status,
+        newStatus: "open",
+        comment: `Student rejected resolution (Unsatisfied): '${reason.trim()}'. Ticket re-generated & returned to stack.`,
+      },
+    });
+
+    return res.json({
+      ...updated,
+      attachments: updated.attachments ? JSON.parse(updated.attachments) : [],
+    });
+  } catch (error) {
+    console.error("Reject resolution error:", error);
+    return res.status(500).json({ error: "Failed to submit dissatisfaction feedback" });
   }
 });
 

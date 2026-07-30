@@ -36,6 +36,10 @@ export default function ComplaintDetailPage() {
   const [feedback, setFeedback] = useState("");
   const [submittingRating, setSubmittingRating] = useState(false);
 
+  const [showRejectionForm, setShowRejectionForm] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [submittingApproval, setSubmittingApproval] = useState(false);
+
   useEffect(() => {
     fetchDetail();
   }, [id]);
@@ -53,6 +57,38 @@ export default function ComplaintDetailPage() {
       toast.error("Failed to load complaint detail: " + err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    setSubmittingApproval(true);
+    try {
+      await api.approveResolution(id, rating, feedback);
+      toast.success("Resolution Approved! Ticket has been closed successfully.");
+      await fetchDetail();
+    } catch (err: any) {
+      toast.error("Failed to approve resolution: " + err.message);
+    } finally {
+      setSubmittingApproval(false);
+    }
+  };
+
+  const handleReject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rejectionReason.trim()) {
+      toast.error("Please enter a reason for dissatisfaction.");
+      return;
+    }
+    setSubmittingApproval(true);
+    try {
+      await api.rejectResolution(id, rejectionReason);
+      toast.success("Dissatisfaction recorded! Ticket has been re-generated & returned to the trade stack.");
+      setShowRejectionForm(false);
+      await fetchDetail();
+    } catch (err: any) {
+      toast.error("Failed to reject resolution: " + err.message);
+    } finally {
+      setSubmittingApproval(false);
     }
   };
 
@@ -221,6 +257,80 @@ export default function ComplaintDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* STUDENT APPROVAL CARD (When Worker Completed Work & Status is Pending Approval) */}
+      {isStudentOwner && complaint.status === "pending_approval" && (
+        <div className="card" style={{ padding: "24px", marginTop: 20, background: "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)", border: "1.5px solid #c7d2fe" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: "#3730a3", marginBottom: 4 }}>
+                Worker Completed Repair — Approval Required
+              </div>
+              <div style={{ fontSize: 13, color: "#4338ca" }}>
+                The technician completed the repair and requested your approval. Are you satisfied with the work done?
+              </div>
+            </div>
+            <SLATimer deadline={complaint.slaDeadline} status={complaint.status} approvalRequestedAt={complaint.approvalRequestedAt} />
+          </div>
+
+          <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+            <button
+              type="button"
+              onClick={handleApprove}
+              disabled={submittingApproval}
+              style={{
+                padding: "12px 24px", background: "#16a34a", color: "#ffffff",
+                border: "none", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(22, 163, 74, 0.3)",
+              }}
+            >
+              {submittingApproval ? "Processing..." : "✓ Satisfied (Close Ticket)"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowRejectionForm(!showRejectionForm)}
+              disabled={submittingApproval}
+              style={{
+                padding: "12px 24px", background: "#dc2626", color: "#ffffff",
+                border: "none", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+              }}
+            >
+              ✕ Unsatisfied (Request Re-work)
+            </button>
+          </div>
+
+          {showRejectionForm && (
+            <form onSubmit={handleReject} style={{ marginTop: 18, background: "#ffffff", padding: "16px", borderRadius: 12, border: "1px solid #fca5a5" }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#991b1b", marginBottom: 6 }}>
+                Please state why you are unsatisfied with the work done: *
+              </label>
+              <textarea
+                required
+                rows={3}
+                placeholder="Explain what is still broken or incomplete (e.g. 'Water pipe still leaks under high pressure')..."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                style={{
+                  width: "100%", padding: "10px 12px", border: "1.5px solid #f87171",
+                  borderRadius: 8, fontSize: 13, outline: "none", boxSizing: "border-box", marginBottom: 10,
+                  fontFamily: "inherit",
+                }}
+              />
+              <button
+                type="submit"
+                disabled={submittingApproval}
+                style={{
+                  padding: "10px 18px", background: "#dc2626", color: "#ffffff",
+                  border: "none", borderRadius: 8, fontWeight: 800, fontSize: 13, cursor: "pointer",
+                }}
+              >
+                {submittingApproval ? "Submitting..." : "Submit Reason & Return Ticket to Stack"}
+              </button>
+            </form>
+          )}
+        </div>
+      )}
 
       {/* SERVICE RATING CARD (Available when Resolved or Closed) */}
       {(complaint.status === "resolved" || complaint.status === "closed") && (
