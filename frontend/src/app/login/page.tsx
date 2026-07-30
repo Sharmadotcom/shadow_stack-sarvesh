@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { UserRole } from "@/types";
-import { GraduationCap, Zap, User, Wrench, Shield } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -111,55 +111,6 @@ export default function LoginPage() {
         <p style={{ color: "#64748b", fontSize: 14, marginTop: 6 }}>
           Sign in or create an account to access grievance redressal services
         </p>
-      </div>
-
-      {/* Quick Hackathon Demo Switcher Banner */}
-      <div style={{
-        background: "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)",
-        borderRadius: 16, padding: "20px", color: "#fff", marginBottom: 24,
-        boxShadow: "0 8px 20px rgba(30, 64, 175, 0.25)",
-      }}>
-        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}>
-          <Zap className="w-4 h-4" /> <span>Hackathon Demo One-Click Login</span>
-        </div>
-        <div style={{ fontSize: 12, color: "#dbeafe", marginBottom: 14 }}>
-          Instant role access for presentation testing:
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-          <button
-            onClick={() => handleQuickLogin("student")}
-            disabled={loading}
-            style={{
-              padding: "10px 8px", background: "#fff", color: "#1e40af",
-              border: "none", borderRadius: 10, fontWeight: 700, fontSize: 12,
-              cursor: "pointer", transition: "transform 0.15s",
-            }}
-          >
-            Student
-          </button>
-          <button
-            onClick={() => handleQuickLogin("worker")}
-            disabled={loading}
-            style={{
-              padding: "10px 8px", background: "#fef3c7", color: "#b45309",
-              border: "none", borderRadius: 10, fontWeight: 700, fontSize: 12,
-              cursor: "pointer", transition: "transform 0.15s",
-            }}
-          >
-            Worker
-          </button>
-          <button
-            onClick={() => handleQuickLogin("admin")}
-            disabled={loading}
-            style={{
-              padding: "10px 8px", background: "#fee2e2", color: "#b91c1c",
-              border: "none", borderRadius: 10, fontWeight: 700, fontSize: 12,
-              cursor: "pointer", transition: "transform 0.15s",
-            }}
-          >
-            Admin
-          </button>
-        </div>
       </div>
 
       {/* Main Auth Form Card */}
