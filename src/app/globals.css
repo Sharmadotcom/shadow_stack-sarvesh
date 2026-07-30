@@ -1,0 +1,124 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f4f6fb;
+  color: #111827;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Responsive Grids ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.priority-row {
+  display: flex;
+  gap: 10px;
+}
+
+/* ── Navbar ── */
+.nav-links { display: flex; gap: 4px; }
+.nav-mobile-toggle { display: none; }
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  background: #1e3a8a;
+  padding: 8px 16px 12px;
+}
+.mobile-menu.open { display: flex; }
+.nav-user { display: flex; align-items: center; gap: 10px; }
+.nav-user-name { display: block; }
+
+/* ── Card base ── */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* ── Page container ── */
+.page-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+/* ── Complaint row ── */
+.complaint-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* ── Admin row ── */
+.admin-row {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-manage-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+/* ────────────────────────
+   MOBILE  (≤ 640px)
+──────────────────────── */
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .cat-grid   { grid-template-columns: repeat(2, 1fr); }
+  .detail-grid { grid-template-columns: 1fr; }
+  .priority-row { flex-wrap: wrap; }
+
+  /* Navbar */
+  .nav-links { display: none; }
+  .nav-mobile-toggle { display: flex !important; }
+  .nav-user-name { display: none; }
+
+  /* Page padding */
+  .page-wrap { padding: 16px 12px; }
+
+  /* Admin */
+  .admin-row { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 16px; }
+  .admin-manage-grid { flex-direction: column; }
+  .admin-manage-grid > div { width: 100%; }
+  .admin-row-actions { flex-direction: column; width: 100%; }
+  .admin-row-actions button { width: 100%; }
+
+  /* Complaint card */
+  .complaint-row { flex-direction: column; gap: 8px; }
+
+  /* Welcome banner */
+  .welcome-banner { padding: 20px !important; }
+  .welcome-banner h2 { font-size: 20px !important; }
+}
