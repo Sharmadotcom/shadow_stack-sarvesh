@@ -26,11 +26,15 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!authLoading) {
-      if (user?.role === "admin") {
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+      if (user.role === "admin") {
         router.push("/admin");
         return;
       }
-      if (user?.role === "worker") {
+      if (user.role === "worker") {
         router.push("/worker");
         return;
       }

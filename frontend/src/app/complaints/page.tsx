@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { Complaint } from "@/types";
 import { useAuth } from "@/context/AuthContext";
@@ -21,7 +22,8 @@ const priorityColor: Record<string, string> = {
 };
 
 export default function ComplaintsPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,8 +31,14 @@ export default function ComplaintsPage() {
   const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
-    fetchComplaints();
-  }, [user, filterStatus]);
+    if (!authLoading) {
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+      fetchComplaints();
+    }
+  }, [user, authLoading, filterStatus]);
 
   const fetchComplaints = async () => {
     setLoading(true);
