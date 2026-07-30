@@ -16,7 +16,7 @@ export function getApiBaseUrl(): string {
 
 export function getAuthToken(): string | null {
   if (typeof window !== "undefined") {
-    return localStorage.getItem("token");
+    return sessionStorage.getItem("token");
   }
   return null;
 }
@@ -24,8 +24,10 @@ export function getAuthToken(): string | null {
 export function setAuthToken(token: string | null) {
   if (typeof window !== "undefined") {
     if (token) {
-      localStorage.setItem("token", token);
+      sessionStorage.setItem("token", token);
+      localStorage.removeItem("token"); // clear any old persistent tokens
     } else {
+      sessionStorage.removeItem("token");
       localStorage.removeItem("token");
     }
   }
