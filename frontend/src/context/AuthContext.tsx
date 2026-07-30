@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const res = await api.login({ email, password });
-    setAuthToken(res.token);
+    setAuthToken(res.token, res.user.role);
     setTokenState(res.token);
     setUser(res.user);
     return res.user;
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (data: any) => {
     const res = await api.register(data);
-    setAuthToken(res.token);
+    setAuthToken(res.token, res.user.role);
     setTokenState(res.token);
     setUser(res.user);
     return res.user;
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const googleLogin = async (credential: any, role: UserRole = "student") => {
     const res = await api.googleLogin(credential, role);
-    setAuthToken(res.token);
+    setAuthToken(res.token, res.user.role);
     setTokenState(res.token);
     setUser(res.user);
     return res.user;

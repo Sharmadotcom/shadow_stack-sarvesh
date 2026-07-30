@@ -16,16 +16,23 @@ export function getApiBaseUrl(): string {
 
 export function getAuthToken(): string | null {
   if (typeof window !== "undefined") {
-    return sessionStorage.getItem("token");
+    return sessionStorage.getItem("token") || localStorage.getItem("token");
   }
   return null;
 }
 
-export function setAuthToken(token: string | null) {
+export function setAuthToken(token: string | null, role?: string) {
   if (typeof window !== "undefined") {
     if (token) {
-      sessionStorage.setItem("token", token);
-      localStorage.removeItem("token"); // clear any old persistent tokens
+      if (role === "worker") {
+        // Workers stay logged in across tab closes
+        localStorage.setItem("token", token);
+        sessionStorage.removeItem("token");
+      } else {
+        // Students and Admins auto-logout on tab close
+        sessionStorage.setItem("token", token);
+        localStorage.removeItem("token");
+      }
     } else {
       sessionStorage.removeItem("token");
       localStorage.removeItem("token");
