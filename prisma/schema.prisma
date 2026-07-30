@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  STAFF          // Department technician / maintenance worker
+  DEPT_HEAD      // HOD / Department Manager
+  ADMIN          // Campus Admin / Escalation Authority
+}
+
+enum Priority {
+  LOW           // SLA: 48 hours
+  MEDIUM        // SLA: 24 hours
+  HIGH          // SLA: 6 hours
+  CRITICAL      // SLA: 1 hour (Incidents/Emergency)
+}
+
+enum Status {
+  SUBMITTED
+  ASSIGNED
+  IN_PROGRESS
+  ESCALATED
+  RESOLVED
+  CLOSED
+  REOPENED
+}
+
+enum Category {
+  ELECTRICAL
+  PLUMBING
+  IT_INTERNET
+  SANITATION
+  ACADEMIC_FACILITIES
+  SAFETY_SECURITY
+  HOSTEL_MAINTENANCE
+}
+
+model User {
+  id                 String      @id @default(cuid())
+  name               String
+  email              String      @unique
+  role               Role        @default(STUDENT)
+  department         Category?   // Populated if staff or HOD
+  createdGrievances  Grievance[] @relation("CreatedBy")
+  assignedGrievances Grievance[] @relation("AssignedTo")
+  comments           Comment[]
+  auditLogs          AuditLog[]
+
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+}
+
+model Grievance {
+  id              String         @id @default(cuid())
+  ticketNumber    String         @unique // Format: GRV-YYYY-XXXX
+  title           String
+  description     String
+  category        Category
+  priority        Priority       @default(MEDIUM)
+  status          Status         @default(SUBMITTED)
+  location        String         // Building / Room / Hostel Block
+
+  // Ownership & Accountability
+  createdById     String
+  createdBy       User           @relation("CreatedBy", fields: [createdById], references: [id])
+  assignedToId    String?
+  assignedTo      User?          @relation("AssignedTo", fields: [assignedToId], references: [id])
+  department      Category       // Target responsible department
+
+  // Service Level Agreement (SLA) & Escalation Rules
+  slaHours        Int            // SLA timer duration in hours
+  slaDeadline     DateTime       // Exact resolution target deadline
+  slaBreached     Boolean        @default(false)
+  escalationLevel Int            @default(0) // 0: Normal, 1: HOD, 2: Campus Dean/Admin
+  escalatedAt     DateTime?
+
+  // Associated Data
+  attachments     Attachment[]
+  comments        Comment[]
+  auditLogs       AuditLog[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Attachment {
+  id          String    @id @default(cuid())
+  url         String
+  fileName    String?
+  fileType    String    // e.g., image/jpeg, application/pdf
+  grievanceId String
+  grievance   Grievance @relation(fields: [grievanceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  content     String
+  isInternal  Boolean   @default(false) // true = staff only note, false = student visible update
+  grievanceId String
+  grievance   Grievance @relation(fields: [grievanceId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  grievanceId String
+  grievance   Grievance @relation(fields: [grievanceId], references: [id], onDelete: Cascade)
+  action      String    // CREATED, ASSIGNED, STATUS_CHANGE, ESCALATED, RESOLVED
+  performedBy String
+  user        User      @relation(fields: [performedBy], references: [id])
+  details     String    // Descriptive log of what changed
+  createdAt   DateTime  @default(now())
+}
