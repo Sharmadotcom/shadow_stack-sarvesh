@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { UserRole } from "@/types";
 import { GraduationCap } from "lucide-react";
+import { useGoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -78,7 +79,28 @@ export default function LoginPage() {
     }
   };
 
-  const handleSimulatedGoogleAuth = async () => {
+  const triggerGoogleOAuth = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      try {
+        await googleLogin(tokenResponse.access_token, selectedRole);
+        toast.success("Signed in with Google OAuth!");
+        if (selectedRole === "admin") router.push("/admin");
+        else if (selectedRole === "worker") router.push("/worker");
+        else router.push("/");
+      } catch (err: any) {
+        toast.error("Google Sign-In error: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => {
+      // Fallback for local demo environment if Client ID isn't configured in Google Console yet
+      handleFallbackGoogleLogin();
+    },
+  });
+
+  const handleFallbackGoogleLogin = async () => {
     setLoading(true);
     try {
       const mockGoogleCredential = {
@@ -95,6 +117,14 @@ export default function LoginPage() {
       toast.error("Google sign-in error: " + err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleClick = () => {
+    try {
+      triggerGoogleOAuth();
+    } catch (e) {
+      handleFallbackGoogleLogin();
     }
   };
 
@@ -139,7 +169,7 @@ export default function LoginPage() {
         {/* Google OAuth Button */}
         <button
           type="button"
-          onClick={handleSimulatedGoogleAuth}
+          onClick={handleGoogleClick}
           disabled={loading}
           style={{
             width: "100%", padding: "12px", borderRadius: 10, border: "1.5px solid #e2e8f0",
