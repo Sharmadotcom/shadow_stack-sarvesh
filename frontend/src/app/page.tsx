@@ -112,7 +112,12 @@ export default function HomePage() {
     }
   };
 
-  // Render Google Sign-In button (real OAuth popup, works in incognito/institutional accounts)
+  const activePortalRef = useRef(activePortal);
+  useEffect(() => {
+    activePortalRef.current = activePortal;
+  }, [activePortal]);
+
+  // Render Google Sign-In button once (real OAuth popup, works across all tabs and institutional/incognito accounts)
   useEffect(() => {
     if (user || typeof window === "undefined") return;
     const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "446874210660-cad4dcopa3jo4kj5cptsa96o2u5tbcid.apps.googleusercontent.com";
@@ -125,11 +130,12 @@ export default function HomePage() {
         client_id: googleClientId,
         callback: async (response: any) => {
           setGoogleLoading(true);
+          const currentRole = activePortalRef.current;
           try {
-            const loggedUser = await googleLogin(response.credential, activePortal);
-            if (loggedUser.role !== activePortal) {
+            const loggedUser = await googleLogin(response.credential, currentRole);
+            if (loggedUser.role !== currentRole) {
               logout();
-              toast.error(`Role Mismatch: Your account is '${loggedUser.role.toUpperCase()}'. Select the ${loggedUser.role.toUpperCase()} Portal card.`);
+              toast.error(`Role Mismatch: Your account is registered as '${loggedUser.role.toUpperCase()}'. Please select the ${loggedUser.role.toUpperCase()} Portal card.`);
               return;
             }
             toast.success("Successfully authenticated with Google!");
@@ -144,21 +150,19 @@ export default function HomePage() {
         },
       });
 
-      // Clear old button and render fresh one
       googleButtonRef.current.innerHTML = "";
       g.accounts.id.renderButton(googleButtonRef.current, {
         type: "standard",
         theme: "outline",
         size: "large",
         text: "signin_with",
-        width: (googleButtonRef.current.parentElement?.offsetWidth || 400),
+        width: 400,
       });
     };
 
     if ((window as any).google?.accounts?.id) {
       renderGoogleButton();
     } else {
-      // Wait for the SDK script to finish loading
       const interval = setInterval(() => {
         if ((window as any).google?.accounts?.id) {
           clearInterval(interval);
@@ -167,7 +171,7 @@ export default function HomePage() {
       }, 200);
       return () => clearInterval(interval);
     }
-  }, [user, activePortal]);
+  }, [user]);
 
   if (authLoading) {
     return (
@@ -300,10 +304,11 @@ export default function HomePage() {
             <div
               ref={googleButtonRef}
               style={{
-                position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
                 overflow: "hidden", opacity: 0.001,
                 pointerEvents: googleLoading || formLoading ? "none" : "all",
                 cursor: "pointer",
+                display: "flex", justifyContent: "center", alignItems: "center",
               }}
             />
           </div>
