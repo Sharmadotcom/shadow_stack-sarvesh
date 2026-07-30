@@ -420,7 +420,7 @@ export default function HomePage() {
                   </>
                 )}
 
-                {activePortal === "worker" && (
+                {isRegister && activePortal === "worker" && (
                   <div style={{ marginBottom: 16 }}>
                     <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
                       Worker Specialty / Category *
@@ -444,7 +444,7 @@ export default function HomePage() {
                   </div>
                 )}
 
-                {activePortal === "worker" && department === "Other" && (
+                {isRegister && activePortal === "worker" && department === "Other" && (
                   <div style={{ marginBottom: 16 }}>
                     <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
                       Specify Other Specialty
