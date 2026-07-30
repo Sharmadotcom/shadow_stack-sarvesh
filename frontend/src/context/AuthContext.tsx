@@ -29,6 +29,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           const res = await api.getMe();
           setUser(res.user);
+          // Migrate non-worker accounts off localStorage immediately
+          if (res.user.role !== "worker") {
+            localStorage.removeItem("token");
+            sessionStorage.setItem("token", storedToken);
+          }
         } catch (err) {
           console.error("Token verification failed:", err);
           setAuthToken(null);
