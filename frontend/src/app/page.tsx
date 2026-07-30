@@ -30,7 +30,8 @@ export default function HomePage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [rollNo, setRollNo] = useState("");
-  const [department, setDepartment] = useState("");
+  const [department, setDepartment] = useState("electrician");
+  const [customDepartment, setCustomDepartment] = useState("");
   const [hostel, setHostel] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -83,7 +84,7 @@ export default function HomePage() {
           password,
           role: activePortal,
           rollNo,
-          department,
+          department: activePortal === "worker" ? (department === "Other" ? (customDepartment || "Other") : department) : department,
           hostel,
         });
         toast.success(`Account registered successfully as ${activePortal.toUpperCase()}!`);
@@ -419,16 +420,40 @@ export default function HomePage() {
                   </>
                 )}
 
-                {isRegister && activePortal === "worker" && (
+                {activePortal === "worker" && (
                   <div style={{ marginBottom: 16 }}>
                     <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-                      Maintenance Department
+                      Worker Specialty / Category *
+                    </label>
+                    <select
+                      value={department}
+                      onChange={(e) => setDepartment(e.target.value)}
+                      style={{
+                        width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
+                        borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box",
+                        backgroundColor: "#ffffff", cursor: "pointer",
+                      }}
+                    >
+                      <option value="electrician">electrician</option>
+                      <option value="plumber">plumber</option>
+                      <option value="Technician">Technician</option>
+                      <option value="Driver">Driver</option>
+                      <option value="Security">Security</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                )}
+
+                {activePortal === "worker" && department === "Other" && (
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
+                      Specify Other Specialty
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Electrical Maintenance or Plumbing Department"
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
+                      placeholder="e.g. Carpenter, Painter, HVAC Specialist"
+                      value={customDepartment}
+                      onChange={(e) => setCustomDepartment(e.target.value)}
                       style={{
                         width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
                         borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box",

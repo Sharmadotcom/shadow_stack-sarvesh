@@ -576,14 +576,20 @@ export default function AdminPage() {
 
                 {newUserRole === "worker" && (
                   <div style={{ gridColumn: "span 2" }}>
-                    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 4 }}>Maintenance Department</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Electrical Maintenance or Plumbing Department"
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 4 }}>Worker Specialty / Category *</label>
+                    <select
                       value={newUserDept}
                       onChange={(e) => setNewUserDept(e.target.value)}
-                      style={{ width: "100%", padding: "10px", border: "1.5px solid #cbd5e1", borderRadius: 8, fontSize: 13, outline: "none", boxSizing: "border-box" }}
-                    />
+                      style={{ width: "100%", padding: "10px", border: "1.5px solid #cbd5e1", borderRadius: 8, fontSize: 13, outline: "none", boxSizing: "border-box", backgroundColor: "#ffffff", cursor: "pointer" }}
+                    >
+                      <option value="">Select Worker Category / Department...</option>
+                      <option value="electrician">electrician</option>
+                      <option value="plumber">plumber</option>
+                      <option value="Technician">Technician</option>
+                      <option value="Driver">Driver</option>
+                      <option value="Security">Security</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
                 )}
 
