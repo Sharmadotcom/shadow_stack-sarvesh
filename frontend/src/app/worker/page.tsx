@@ -1,0 +1,288 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
+import { Complaint, Status } from "@/types";
+import { toast } from "sonner";
+import Link from "next/link";
+import { SLATimer } from "@/components/complaints/SLATimer";
+
+const priorityColor: Record<string, string> = {
+  low: "#6b7280", medium: "#3b82f6", high: "#f59e0b", critical: "#ef4444",
+};
+
+export default function WorkerPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"pending" | "resolved">("pending");
+  const [noteMap, setNoteMap] = useState<Record<string, string>>({});
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        toast.error("Please log in to access the Worker Portal.");
+        router.push("/login");
+        return;
+      }
+      if (user.role !== "worker") {
+        toast.error(`Access denied. ${user.role.toUpperCase()} role cannot access Worker Portal.`);
+        if (user.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
+        return;
+      }
+      fetchWorkerTasks();
+    }
+  }, [user, authLoading, router]);
+
+  const fetchWorkerTasks = async () => {
+    setLoading(true);
+    try {
+      const data = await api.getComplaints();
+      setComplaints(data);
+    } catch (err: any) {
+      toast.error("Failed to load worker tasks: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (complaintId: string, newStatus: Status) => {
+    setUpdatingId(complaintId);
+    try {
+      const note = noteMap[complaintId] || "";
+      await api.updateStatus(complaintId, newStatus, note);
+      toast.success(`Task ${complaintId} status updated to ${newStatus.toUpperCase()}`);
+      await fetchWorkerTasks();
+    } catch (err: any) {
+      toast.error("Status update failed: " + err.message);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const pendingTasks = complaints.filter(
+    (c) => c.status === "assigned" || c.status === "in_progress" || c.status === "escalated"
+  );
+  const resolvedTasks = complaints.filter(
+    (c) => c.status === "resolved" || c.status === "closed"
+  );
+
+  const displayed = activeTab === "pending" ? pendingTasks : resolvedTasks;
+
+  if (authLoading || loading) {
+    return (
+      <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-muted, #64748b)" }}>
+        <div style={{ fontSize: 36, marginBottom: 12 }}>🛠️</div>
+        <div style={{ fontWeight: 600 }}>Loading assigned maintenance work orders...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* Header Banner */}
+      <div style={{
+        background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+        color: "#fff", borderRadius: 16, padding: "28px 32px", marginBottom: 24,
+        boxShadow: "0 4px 20px rgba(15, 23, 42, 0.15)",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, display: "flex", alignItems: "center", gap: 10 }}>
+              🛠️ Worker Maintenance Portal
+            </div>
+            <div style={{ color: "#94a3b8", fontSize: 14 }}>
+              Logged in as <strong style={{ color: "#f8fafc" }}>{user?.name}</strong> ({user?.department || "Field Staff"})
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 12 }}>
+            <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", textAlign: "center" }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#f59e0b" }}>{pendingTasks.length}</div>
+              <div style={{ fontSize: 11, color: "#cbd5e1" }}>Pending Jobs</div>
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", textAlign: "center" }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#10b981" }}>{resolvedTasks.length}</div>
+              <div style={{ fontSize: 11, color: "#cbd5e1" }}>Completed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+        <button
+          onClick={() => setActiveTab("pending")}
+          style={{
+            padding: "10px 20px", borderRadius: 10, fontSize: 14, fontWeight: 700,
+            border: "1.5px solid", cursor: "pointer",
+            borderColor: activeTab === "pending" ? "#1e40af" : "var(--border-main, #e2e8f0)",
+            background: activeTab === "pending" ? "#1e40af" : "var(--bg-card, #fff)",
+            color: activeTab === "pending" ? "#fff" : "var(--text-muted, #475569)",
+          }}
+        >
+          ⏳ Active Work Orders ({pendingTasks.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("resolved")}
+          style={{
+            padding: "10px 20px", borderRadius: 10, fontSize: 14, fontWeight: 700,
+            border: "1.5px solid", cursor: "pointer",
+            borderColor: activeTab === "resolved" ? "#10b981" : "var(--border-main, #e2e8f0)",
+            background: activeTab === "resolved" ? "#10b981" : "var(--bg-card, #fff)",
+            color: activeTab === "resolved" ? "#fff" : "var(--text-muted, #475569)",
+          }}
+        >
+          ✅ Completed Tasks ({resolvedTasks.length})
+        </button>
+      </div>
+
+      {/* Work Orders List */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {displayed.length === 0 ? (
+          <div className="card" style={{ padding: "48px", textAlign: "center", color: "var(--text-muted, #94a3b8)" }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🎉</div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: "var(--text-heading, #334155)" }}>
+              {activeTab === "pending" ? "No active work orders assigned!" : "No completed tasks yet."}
+            </div>
+            <div style={{ fontSize: 13, marginTop: 4 }}>You will be notified when new complaints are assigned.</div>
+          </div>
+        ) : (
+          displayed.map((c) => (
+            <div
+              key={c.id}
+              className="card"
+              style={{
+                padding: "20px", borderRadius: 16, background: "var(--bg-card, #fff)",
+                borderLeft: `6px solid ${priorityColor[c.priority]}`,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                    <span style={{
+                      padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 800,
+                      textTransform: "uppercase", background: priorityColor[c.priority] + "20",
+                      color: priorityColor[c.priority],
+                    }}>
+                      {c.priority} Priority
+                    </span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted, #64748b)" }}>{c.id}</span>
+                  </div>
+                  <h3 style={{ margin: "4px 0", fontSize: 17, fontWeight: 800, color: "var(--text-heading, #0f172a)" }}>
+                    {c.title}
+                  </h3>
+                  <p style={{ margin: "4px 0 10px", color: "var(--text-muted, #475569)", fontSize: 14 }}>
+                    {c.description}
+                  </p>
+                </div>
+
+                <div style={{ textAlign: "right" }}>
+                  <SLATimer deadline={c.slaDeadline} status={c.status} />
+                </div>
+              </div>
+
+              {/* Location & Reported By info */}
+              <div style={{
+                background: "var(--bg-card-subtle, #f8fafc)", borderRadius: 10, padding: "12px 14px",
+                margin: "12px 0", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12,
+                fontSize: 13, border: "1px solid var(--border-main, #f1f5f9)",
+              }}>
+                <div>
+                  <div style={{ color: "var(--text-muted, #94a3b8)", fontSize: 11, fontWeight: 700 }}>📍 LOCATION</div>
+                  <div style={{ fontWeight: 700, color: "var(--text-heading, #1e293b)", marginTop: 2 }}>{c.location || "On-Campus"}</div>
+                </div>
+                <div>
+                  <div style={{ color: "var(--text-muted, #94a3b8)", fontSize: 11, fontWeight: 700 }}>👤 REPORTED BY</div>
+                  <div style={{ fontWeight: 700, color: "var(--text-heading, #1e293b)", marginTop: 2 }}>
+                    {c.submittedBy.name} {c.submittedBy.rollNo ? `(${c.submittedBy.rollNo})` : ""}
+                  </div>
+                </div>
+              </div>
+
+              {/* Attachments preview if present */}
+              {c.attachments && c.attachments.length > 0 && (
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted, #64748b)", marginBottom: 6 }}>
+                    📸 Attached Photos ({c.attachments.length}):
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {c.attachments.map((imgUrl, idx) => (
+                      <a key={idx} href={`http://localhost:5000${imgUrl}`} target="_blank" rel="noreferrer">
+                        <img
+                          src={`http://localhost:5000${imgUrl}`}
+                          alt="Issue photo"
+                          style={{ width: 64, height: 64, borderRadius: 8, objectFit: "cover", border: "1px solid var(--input-border, #cbd5e1)" }}
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Worker Action controls */}
+              {activeTab === "pending" && (
+                <div style={{ background: "var(--bg-card-subtle, #eff6ff)", borderRadius: 12, padding: "14px", marginTop: 12, border: "1px solid var(--border-main, #bfdbfe)" }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1e40af", marginBottom: 8 }}>
+                    🛠️ Worker Actions & Updates
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Add work progress note / resolution details (e.g. 'Replaced blown fuse')..."
+                    value={noteMap[c.id] || ""}
+                    onChange={(e) => setNoteMap({ ...noteMap, [c.id]: e.target.value })}
+                    style={{
+                      width: "100%", padding: "10px 12px", border: "1.5px solid var(--input-border, #cbd5e1)",
+                      borderRadius: 8, fontSize: 13, outline: "none", boxSizing: "border-box", marginBottom: 10,
+                    }}
+                  />
+                  <div style={{ display: "flex", gap: 10 }}>
+                    {c.status !== "in_progress" && (
+                      <button
+                        onClick={() => handleStatusChange(c.id, "in_progress")}
+                        disabled={updatingId === c.id}
+                        style={{
+                          padding: "8px 16px", background: "#f59e0b", color: "#fff",
+                          border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
+                        }}
+                      >
+                        ⚡ Mark In Progress
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleStatusChange(c.id, "resolved")}
+                      disabled={updatingId === c.id}
+                      style={{
+                        padding: "8px 16px", background: "#10b981", color: "#fff",
+                        border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
+                      }}
+                    >
+                      ✅ Mark Issue Resolved
+                    </button>
+                    <Link href={`/complaints/${c.id}`} style={{ textDecoration: "none", marginLeft: "auto" }}>
+                      <button style={{
+                        padding: "8px 14px", background: "var(--bg-card, #fff)", color: "#1e40af",
+                        border: "1px solid var(--border-main, #bfdbfe)", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
+                      }}>
+                        View Full Details →
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}

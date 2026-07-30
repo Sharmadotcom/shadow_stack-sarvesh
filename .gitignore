@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Environment & local DB
+.env
+.env.local
+*.log
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/prisma/*.db
+backend/prisma/*.db-journal
+
+# IDE & System
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
