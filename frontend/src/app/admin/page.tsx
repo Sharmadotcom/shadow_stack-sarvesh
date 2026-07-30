@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { Complaint, Status, User } from "@/types";
 import { getTimeAgo } from "@/lib/utils";
+import { FileText, ShieldCheck, AlertTriangle, UserCheck, Check, Edit, X } from "lucide-react";
 
 const statusColor: Record<string, string> = {
   open: "#3b82f6", assigned: "#8b5cf6", in_progress: "#f59e0b",
@@ -105,7 +106,6 @@ export default function AdminPage() {
   if (authLoading || loading) {
     return (
       <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-muted, #64748b)" }}>
-        <div style={{ fontSize: 36, marginBottom: 12 }}></div>
         <div style={{ fontWeight: 600 }}>Loading Admin Operations Panel...</div>
       </div>
     );
@@ -130,7 +130,7 @@ export default function AdminPage() {
       {/* Title & Tabs */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <div>
-          <h1 style={{ margin: "0 0 4px", fontSize: 24, fontWeight: 800, color: "var(--text-heading, #0f172a)" }}> Admin Command Center</h1>
+          <h1 style={{ margin: "0 0 4px", fontSize: 24, fontWeight: 800, color: "var(--text-heading, #0f172a)" }}>Admin Command Center</h1>
           <p style={{ margin: 0, color: "var(--text-muted, #64748b)", fontSize: 14 }}>Real-time stats, SLA tracking, worker allocation & complaint escalations</p>
         </div>
 
@@ -158,19 +158,24 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* KPI Cards (No Star Rating Feature) */}
+      {/* KPI Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16, marginBottom: 24 }}>
         {[
-          { label: "Total Complaints", value: analytics?.stats?.total ?? 0, color: "#6366f1", icon: "📋" },
-          { label: "SLA Compliance Rate", value: `${analytics?.stats?.slaComplianceRate ?? 100}%`, color: "#10b981"},
-          { label: "Escalated Issues", value: analytics?.stats?.escalated ?? 0, color: "#ef4444"},
-        ].map((s) => (
-          <div key={s.label} className="card" style={{ padding: "20px 16px", textAlign: "center", borderTop: `4px solid ${s.color}` }}>
-            <div style={{ fontSize: 24, marginBottom: 4 }}>{s.icon}</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 13, color: "var(--text-muted, #64748b)", marginTop: 2, fontWeight: 600 }}>{s.label}</div>
-          </div>
-        ))}
+          { label: "Total Complaints", value: analytics?.stats?.total ?? 0, color: "#6366f1", icon: FileText },
+          { label: "SLA Compliance Rate", value: `${analytics?.stats?.slaComplianceRate ?? 100}%`, color: "#10b981", icon: ShieldCheck },
+          { label: "Escalated Issues", value: analytics?.stats?.escalated ?? 0, color: "#ef4444", icon: AlertTriangle },
+        ].map((s) => {
+          const Icon = s.icon;
+          return (
+            <div key={s.label} className="card" style={{ padding: "20px 16px", textAlign: "center", borderTop: `4px solid ${s.color}` }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
+                <Icon className="w-6 h-6" style={{ color: s.color }} />
+              </div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
+              <div style={{ fontSize: 13, color: "var(--text-muted, #64748b)", marginTop: 2, fontWeight: 600 }}>{s.label}</div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Analytics / Overview View */}
@@ -224,7 +229,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* Worker Leaderboard (Without Service Rating Column) */}
+          {/* Worker Leaderboard */}
           <div className="card" style={{ padding: "20px" }}>
             <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "var(--text-heading, #1e293b)" }}>
               Maintenance Staff Overview
@@ -243,7 +248,7 @@ export default function AdminPage() {
                   {analytics?.workerStats?.map((w: any, idx: number) => (
                     <tr key={w.id} style={{ borderBottom: "1px solid var(--border-main, #f1f5f9)" }}>
                       <td style={{ padding: "12px 14px", fontWeight: 700, color: "var(--text-heading, #0f172a)" }}>
-                        {idx === 0 ? "🥇 " : idx === 1 ? "🥈 " : "🥉 "}{w.name}
+                        {idx + 1}. {w.name}
                       </td>
                       <td style={{ padding: "12px 14px", color: "var(--text-muted, #475569)" }}>{w.department}</td>
                       <td style={{ padding: "12px 14px", fontWeight: 600 }}>{w.assignedCount}</td>
@@ -276,9 +281,9 @@ export default function AdminPage() {
                   <div style={{ fontSize: 12, color: "var(--text-muted, #64748b)" }}>
                     {c.id} · {c.category} · {getTimeAgo(c.createdAt)}
                     {c.assignedTo ? (
-                      <span style={{ color: "#2563eb", marginLeft: 8 }}>👤 {c.assignedTo.name}</span>
+                      <span style={{ color: "#2563eb", marginLeft: 8 }}>Technician: {c.assignedTo.name}</span>
                     ) : (
-                      <span style={{ color: "#d97706", marginLeft: 8, fontWeight: 700 }}>⚠ Unassigned</span>
+                      <span style={{ color: "#d97706", marginLeft: 8, fontWeight: 700 }}>Unassigned</span>
                     )}
                   </div>
                 </div>
@@ -297,13 +302,13 @@ export default function AdminPage() {
                   <button onClick={() => handleEscalate(c)} title="Escalate Priority to Critical" style={{
                     padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: 700,
                     border: "1.5px solid #fca5a5", color: "#dc2626", background: "var(--bg-card, #fff5f5)", cursor: "pointer",
-                  }}>🚨 Escalate</button>
+                  }}>Escalate</button>
 
                   <button onClick={() => setExpandedId(expandedId === c.id ? null : c.id)} style={{
                     padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: 700,
                     border: "1.5px solid #bfdbfe", color: "#1e40af", background: "var(--bg-card, #eff6ff)", cursor: "pointer",
                   }}>
-                    {expandedId === c.id ? "✕ Close" : "✏️ Manage"}
+                    {expandedId === c.id ? "Close" : "Manage"}
                   </button>
                 </div>
               </div>
@@ -314,7 +319,7 @@ export default function AdminPage() {
                   <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
                     <div style={{ flex: 1, minWidth: 200 }}>
                       <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--text-heading, #334155)", marginBottom: 6 }}>
-                        👤 Assign Maintenance Worker
+                        Assign Maintenance Worker
                       </label>
                       <select
                         value={assignMap[c.id] ?? c.assignedTo?.id ?? ""}
@@ -335,7 +340,7 @@ export default function AdminPage() {
 
                     <div style={{ flex: 1, minWidth: 200 }}>
                       <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--text-heading, #334155)", marginBottom: 6 }}>
-                        🔄 Change Complaint Status
+                        Change Complaint Status
                       </label>
                       <select
                         value={statusMap[c.id] ?? c.status}
@@ -363,7 +368,7 @@ export default function AdminPage() {
                         border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
                       }}
                     >
-                      ✅ Save Changes
+                      Save Changes
                     </button>
                     <button
                       onClick={() => setExpandedId(null)}

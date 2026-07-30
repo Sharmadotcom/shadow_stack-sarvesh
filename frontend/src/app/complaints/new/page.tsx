@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { CATEGORIES, PRIORITIES } from "@/lib/constants";
 import { Priority } from "@/types";
+import { Camera, Clock, Send, Upload } from "lucide-react";
 
 export default function NewComplaintPage() {
   const router = useRouter();
@@ -90,7 +91,7 @@ export default function NewComplaintPage() {
   return (
     <div style={{ maxWidth: 640, margin: "0 auto" }}>
       <h1 style={{ margin: "0 0 4px", fontSize: 24, fontWeight: 800, color: "#0f172a" }}>
-        ➕ Report New Complaint / Service Issue
+        Report New Complaint / Service Issue
       </h1>
       <p style={{ margin: "0 0 24px", color: "#64748b", fontSize: 14 }}>
         Fill in details below to log your issue with automatic SLA tracking and assigned department ownership.
@@ -131,13 +132,13 @@ export default function NewComplaintPage() {
           >
             {CATEGORIES.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.icon} {c.label} — (Target SLA: {c.slaHours} Hours)
+                {c.label} — (Target SLA: {c.slaHours} Hours)
               </option>
             ))}
           </select>
           {selectedCategoryObj && (
-            <div style={{ fontSize: 12, color: "#2563eb", marginTop: 6, fontWeight: 600 }}>
-              ⏱️ Expected SLA resolution time: <strong>Within {selectedCategoryObj.slaHours} hours</strong> of submission.
+            <div style={{ fontSize: 12, color: "#2563eb", marginTop: 6, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+              <Clock className="w-3.5 h-3.5" /> Expected SLA resolution time: <strong>Within {selectedCategoryObj.slaHours} hours</strong> of submission.
             </div>
           )}
         </div>
@@ -162,7 +163,7 @@ export default function NewComplaintPage() {
                   transition: "all 0.15s",
                 }}
               >
-                {p.id === "critical" ? "🚨 " : ""}{p.label}
+                {p.label}
               </button>
             ))}
           </div>
@@ -207,7 +208,7 @@ export default function NewComplaintPage() {
         {/* Image Attachment Upload */}
         <div style={{ marginBottom: 24 }}>
           <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-            📸 Photo Attachments (Upload damage / proof images)
+            Photo Attachments (Upload damage / proof images)
           </label>
           <div style={{
             border: "2px dashed #cbd5e1", borderRadius: 12, padding: "20px",
@@ -223,7 +224,9 @@ export default function NewComplaintPage() {
               id="file-input"
             />
             <label htmlFor="file-input" style={{ cursor: "pointer" }}>
-              <div style={{ fontSize: 28, marginBottom: 4 }}>📷</div>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
+                <Camera className="w-8 h-8 text-blue-600" />
+              </div>
               <div style={{ fontSize: 14, fontWeight: 700, color: "#1e40af" }}>
                 {uploading ? "Uploading photo(s)..." : "Click to select or upload images"}
               </div>
@@ -268,7 +271,7 @@ export default function NewComplaintPage() {
             cursor: "pointer", boxShadow: "0 4px 14px rgba(30,64,175,0.3)",
           }}
         >
-          {submitting ? "Submitting Issue..." : "🚀 Submit Complaint"}
+          {submitting ? "Submitting Issue..." : "Submit Complaint"}
         </button>
       </form>
     </div>

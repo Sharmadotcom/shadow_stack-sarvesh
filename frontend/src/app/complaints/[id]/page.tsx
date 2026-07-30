@@ -9,6 +9,7 @@ import { Complaint } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 import { SLATimer } from "@/components/complaints/SLATimer";
 import { getTimeAgo } from "@/lib/utils";
+import { Search, AlertCircle, Wrench, Star, History, Camera, User } from "lucide-react";
 
 const statusColor: Record<string, string> = {
   open: "#3b82f6", assigned: "#8b5cf6", in_progress: "#f59e0b",
@@ -16,7 +17,7 @@ const statusColor: Record<string, string> = {
 };
 const statusLabel: Record<string, string> = {
   open: "Open", assigned: "Assigned", in_progress: "In Progress",
-  resolved: "Resolved", closed: "Closed", escalated: "🚨 Escalated",
+  resolved: "Resolved", closed: "Closed", escalated: "Escalated",
 };
 const priorityColor: Record<string, string> = {
   low: "#6b7280", medium: "#3b82f6", high: "#f59e0b", critical: "#ef4444",
@@ -72,7 +73,9 @@ export default function ComplaintDetailPage() {
   if (loading) {
     return (
       <div style={{ textAlign: "center", padding: "60px 0", color: "#64748b" }}>
-        <div style={{ fontSize: 36, marginBottom: 12 }}>🔍</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+          <Search className="w-8 h-8 text-blue-600 animate-spin" />
+        </div>
         <div style={{ fontWeight: 600 }}>Loading complaint details...</div>
       </div>
     );
@@ -81,7 +84,9 @@ export default function ComplaintDetailPage() {
   if (!complaint) {
     return (
       <div className="card" style={{ padding: "48px 24px", textAlign: "center", color: "#94a3b8" }}>
-        <div style={{ fontSize: 40, marginBottom: 12 }}>❌</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+          <AlertCircle className="w-10 h-10 text-red-500" />
+        </div>
         <div style={{ fontWeight: 700, fontSize: 16, color: "#334155" }}>Complaint not found</div>
         <Link href="/complaints" style={{ textDecoration: "none", color: "#1e40af", fontWeight: 700, marginTop: 12, display: "inline-block" }}>
           ← Back to Complaints
@@ -117,7 +122,7 @@ export default function ComplaintDetailPage() {
               {complaint.title}
             </h1>
             <div style={{ fontSize: 13, color: "#64748b" }}>
-              Category: <strong>{complaint.category}</strong> {complaint.location ? `· 📍 ${complaint.location}` : ""}
+              Category: <strong>{complaint.category}</strong> {complaint.location ? `· ${complaint.location}` : ""}
             </div>
           </div>
 
@@ -152,7 +157,7 @@ export default function ComplaintDetailPage() {
         {complaint.attachments && complaint.attachments.length > 0 && (
           <div style={{ marginTop: 20 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", marginBottom: 8 }}>
-              📸 Uploaded Photos ({complaint.attachments.length})
+              Uploaded Photos ({complaint.attachments.length})
             </div>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               {complaint.attachments.map((imgUrl, i) => (
@@ -184,7 +189,9 @@ export default function ComplaintDetailPage() {
               <div style={{ fontSize: 12, color: "#2563eb" }}>{complaint.assignedTo.department}</div>
             )}
           </div>
-          <div style={{ fontSize: 24 }}>🛠️</div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: "50%", background: "#e2e8f0" }}>
+            <Wrench className="w-5 h-5 text-gray-600" />
+          </div>
         </div>
       </div>
 
@@ -192,7 +199,7 @@ export default function ComplaintDetailPage() {
       {(complaint.status === "resolved" || complaint.status === "closed") && (
         <div className="card" style={{ padding: "24px", marginTop: 20, background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)", border: "1.5px solid #fde68a" }}>
           <div style={{ fontSize: 17, fontWeight: 800, color: "#92400e", marginBottom: 4, display: "flex", alignItems: "center", gap: 8 }}>
-            ⭐ Service Resolution Rating
+            Service Resolution Rating
           </div>
           <div style={{ fontSize: 13, color: "#b45309", marginBottom: 14 }}>
             Rate your satisfaction with the maintenance team's repair service:
@@ -206,11 +213,12 @@ export default function ComplaintDetailPage() {
                   type="button"
                   onClick={() => setRating(star)}
                   style={{
-                    fontSize: 28, background: "none", border: "none", cursor: "pointer",
+                    fontSize: 24, background: "none", border: "none", cursor: "pointer",
+                    color: star <= rating ? "#d97706" : "#d1d5db",
                     transform: star <= rating ? "scale(1.15)" : "scale(1)", transition: "transform 0.1s",
                   }}
                 >
-                  {star <= rating ? "⭐" : "☆"}
+                  ★
                 </button>
               ))}
               <span style={{ alignSelf: "center", fontWeight: 800, fontSize: 14, color: "#92400e", marginLeft: 8 }}>
@@ -247,7 +255,7 @@ export default function ComplaintDetailPage() {
       {/* Audit Log Timeline */}
       <div className="card" style={{ padding: "24px", marginTop: 20 }}>
         <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 800, color: "#0f172a" }}>
-          📜 Resolution Audit Log & History
+          Resolution Audit Log & History
         </h3>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

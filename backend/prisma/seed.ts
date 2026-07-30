@@ -109,15 +109,15 @@ async function main() {
 
   // 2. Create Categories
   const categories = [
-    { id: "electrical", label: "Electrical", icon: "⚡", slaHours: 4, color: "text-yellow-400", bg: "bg-yellow-400/10" },
-    { id: "plumbing", label: "Plumbing", icon: "🔧", slaHours: 8, color: "text-blue-400", bg: "bg-blue-400/10" },
-    { id: "internet", label: "Internet / WiFi", icon: "📶", slaHours: 6, color: "text-purple-400", bg: "bg-purple-400/10" },
-    { id: "hostel", label: "Hostel Room", icon: "🏠", slaHours: 24, color: "text-green-400", bg: "bg-green-400/10" },
-    { id: "canteen", label: "Canteen / Food", icon: "🍽️", slaHours: 12, color: "text-orange-400", bg: "bg-orange-400/10" },
-    { id: "academics", label: "Academics", icon: "📚", slaHours: 48, color: "text-indigo-400", bg: "bg-indigo-400/10" },
-    { id: "transport", label: "Transport", icon: "🚌", slaHours: 12, color: "text-teal-400", bg: "bg-teal-400/10" },
-    { id: "security", label: "Security", icon: "🔒", slaHours: 2, color: "text-red-400", bg: "bg-red-400/10" },
-    { id: "other", label: "Other", icon: "📋", slaHours: 48, color: "text-gray-400", bg: "bg-gray-400/10" },
+    { id: "electrical", label: "Electrical", icon: "Zap", slaHours: 4, color: "text-yellow-400", bg: "bg-yellow-400/10" },
+    { id: "plumbing", label: "Plumbing", icon: "Wrench", slaHours: 8, color: "text-blue-400", bg: "bg-blue-400/10" },
+    { id: "internet", label: "Internet / WiFi", icon: "Wifi", slaHours: 6, color: "text-purple-400", bg: "bg-purple-400/10" },
+    { id: "hostel", label: "Hostel Room", icon: "Home", slaHours: 24, color: "text-green-400", bg: "bg-green-400/10" },
+    { id: "canteen", label: "Canteen / Food", icon: "Utensils", slaHours: 12, color: "text-orange-400", bg: "bg-orange-400/10" },
+    { id: "academics", label: "Academics", icon: "BookOpen", slaHours: 48, color: "text-indigo-400", bg: "bg-indigo-400/10" },
+    { id: "transport", label: "Transport", icon: "Bus", slaHours: 12, color: "text-teal-400", bg: "bg-teal-400/10" },
+    { id: "security", label: "Security", icon: "Shield", slaHours: 2, color: "text-red-400", bg: "bg-red-400/10" },
+    { id: "other", label: "Other", icon: "FileText", slaHours: 48, color: "text-gray-400", bg: "bg-gray-400/10" },
   ];
 
   for (const cat of categories) {

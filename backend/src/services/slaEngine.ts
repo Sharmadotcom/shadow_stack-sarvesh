@@ -39,7 +39,7 @@ export async function checkAndEscalateSLABreaches() {
           newStatus: "escalated",
           oldPriority: c.priority,
           newPriority: "critical",
-          comment: `🚨 AUTOMATIC SLA ESCALATION: Response window expired (${c.slaDeadline.toISOString()}). Escalated to Critical priority.`,
+          comment: `AUTOMATIC SLA ESCALATION: Response window expired (${c.slaDeadline.toISOString()}). Escalated to Critical priority.`,
         },
       });
 

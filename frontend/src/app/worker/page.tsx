@@ -8,6 +8,7 @@ import { Complaint, Status } from "@/types";
 import { toast } from "sonner";
 import Link from "next/link";
 import { SLATimer } from "@/components/complaints/SLATimer";
+import { Wrench, CheckCircle2, MapPin, User, Camera, Play, Check } from "lucide-react";
 
 const priorityColor: Record<string, string> = {
   low: "#6b7280", medium: "#3b82f6", high: "#f59e0b", critical: "#ef4444",
@@ -81,7 +82,9 @@ export default function WorkerPage() {
   if (authLoading || loading) {
     return (
       <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-muted, #64748b)" }}>
-        <div style={{ fontSize: 36, marginBottom: 12 }}>🛠️</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+          <Wrench className="w-8 h-8 text-amber-500 animate-spin" />
+        </div>
         <div style={{ fontWeight: 600 }}>Loading assigned maintenance work orders...</div>
       </div>
     );
@@ -98,7 +101,7 @@ export default function WorkerPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
           <div>
             <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, display: "flex", alignItems: "center", gap: 10 }}>
-              🛠️ Worker Maintenance Portal
+              Worker Maintenance Portal
             </div>
             <div style={{ color: "#94a3b8", fontSize: 14 }}>
               Logged in as <strong style={{ color: "#f8fafc" }}>{user?.name}</strong> ({user?.department || "Field Staff"})
@@ -129,7 +132,7 @@ export default function WorkerPage() {
             color: activeTab === "pending" ? "#fff" : "var(--text-muted, #475569)",
           }}
         >
-          ⏳ Active Work Orders ({pendingTasks.length})
+          Active Work Orders ({pendingTasks.length})
         </button>
         <button
           onClick={() => setActiveTab("resolved")}
@@ -141,7 +144,7 @@ export default function WorkerPage() {
             color: activeTab === "resolved" ? "#fff" : "var(--text-muted, #475569)",
           }}
         >
-          ✅ Completed Tasks ({resolvedTasks.length})
+          Completed Tasks ({resolvedTasks.length})
         </button>
       </div>
 
@@ -149,7 +152,9 @@ export default function WorkerPage() {
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {displayed.length === 0 ? (
           <div className="card" style={{ padding: "48px", textAlign: "center", color: "var(--text-muted, #94a3b8)" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🎉</div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+              <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+            </div>
             <div style={{ fontWeight: 700, fontSize: 16, color: "var(--text-heading, #334155)" }}>
               {activeTab === "pending" ? "No active work orders assigned!" : "No completed tasks yet."}
             </div>
@@ -198,11 +203,11 @@ export default function WorkerPage() {
                 fontSize: 13, border: "1px solid var(--border-main, #f1f5f9)",
               }}>
                 <div>
-                  <div style={{ color: "var(--text-muted, #94a3b8)", fontSize: 11, fontWeight: 700 }}>📍 LOCATION</div>
+                  <div style={{ color: "var(--text-muted, #94a3b8)", fontSize: 11, fontWeight: 700 }}>LOCATION</div>
                   <div style={{ fontWeight: 700, color: "var(--text-heading, #1e293b)", marginTop: 2 }}>{c.location || "On-Campus"}</div>
                 </div>
                 <div>
-                  <div style={{ color: "var(--text-muted, #94a3b8)", fontSize: 11, fontWeight: 700 }}>👤 REPORTED BY</div>
+                  <div style={{ color: "var(--text-muted, #94a3b8)", fontSize: 11, fontWeight: 700 }}>REPORTED BY</div>
                   <div style={{ fontWeight: 700, color: "var(--text-heading, #1e293b)", marginTop: 2 }}>
                     {c.submittedBy.name} {c.submittedBy.rollNo ? `(${c.submittedBy.rollNo})` : ""}
                   </div>
@@ -213,7 +218,7 @@ export default function WorkerPage() {
               {c.attachments && c.attachments.length > 0 && (
                 <div style={{ marginBottom: 14 }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-muted, #64748b)", marginBottom: 6 }}>
-                    📸 Attached Photos ({c.attachments.length}):
+                    Attached Photos ({c.attachments.length}):
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
                     {c.attachments.map((imgUrl, idx) => (
@@ -233,7 +238,7 @@ export default function WorkerPage() {
               {activeTab === "pending" && (
                 <div style={{ background: "var(--bg-card-subtle, #eff6ff)", borderRadius: 12, padding: "14px", marginTop: 12, border: "1px solid var(--border-main, #bfdbfe)" }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: "#1e40af", marginBottom: 8 }}>
-                    🛠️ Worker Actions & Updates
+                    Worker Actions & Updates
                   </div>
                   <input
                     type="text"
@@ -255,7 +260,7 @@ export default function WorkerPage() {
                           border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
                         }}
                       >
-                        ⚡ Mark In Progress
+                        Mark In Progress
                       </button>
                     )}
                     <button
@@ -266,7 +271,7 @@ export default function WorkerPage() {
                         border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
                       }}
                     >
-                      ✅ Mark Issue Resolved
+                      Mark Issue Resolved
                     </button>
                     <Link href={`/complaints/${c.id}`} style={{ textDecoration: "none", marginLeft: "auto" }}>
                       <button style={{

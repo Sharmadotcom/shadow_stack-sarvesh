@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { Complaint } from "@/types";
 import { getTimeAgo } from "@/lib/utils";
+import { GraduationCap, FileText, Clock, CheckCircle2, AlertTriangle, MapPin, PlusCircle, ListFilter } from "lucide-react";
 
 const statusColor: Record<string, string> = {
   open: "#3b82f6", assigned: "#8b5cf6", in_progress: "#f59e0b",
@@ -14,7 +15,7 @@ const statusColor: Record<string, string> = {
 };
 const statusLabel: Record<string, string> = {
   open: "Open", assigned: "Assigned", in_progress: "In Progress",
-  resolved: "Resolved", closed: "Closed", escalated: "🚨 Escalated",
+  resolved: "Resolved", closed: "Closed", escalated: "Escalated",
 };
 
 export default function HomePage() {
@@ -67,7 +68,9 @@ export default function HomePage() {
   if (authLoading) {
     return (
       <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-muted, #64748b)" }}>
-        <div style={{ fontSize: 36, marginBottom: 12 }}>🎓</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+          <GraduationCap className="w-10 h-10 text-blue-600 animate-pulse" />
+        </div>
         <div style={{ fontWeight: 600 }}>Loading Student Portal...</div>
       </div>
     );
@@ -82,7 +85,7 @@ export default function HomePage() {
         boxShadow: "0 8px 24px rgba(30, 64, 175, 0.2)",
       }}>
         <div style={{ fontSize: 24, fontWeight: 800, marginBottom: 6 }}>
-          👋 Hello, {user ? user.name : "Student"}!
+          Hello, {user ? user.name : "Student"}!
         </div>
         <div style={{ color: "#dbeafe", fontSize: 14, marginBottom: 20 }}>
           Submit grievances, track repair progress, and rate resolution services in real-time.
@@ -94,8 +97,9 @@ export default function HomePage() {
               borderRadius: 10, padding: "12px 22px",
               fontWeight: 800, fontSize: 14, cursor: "pointer",
               boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              display: "inline-flex", alignItems: "center", gap: 8,
             }}>
-              ➕ Report a New Issue
+              <PlusCircle className="w-4 h-4" /> Report a New Issue
             </button>
           </Link>
           <Link href="/complaints" style={{ textDecoration: "none" }}>
@@ -103,8 +107,9 @@ export default function HomePage() {
               background: "rgba(255,255,255,0.15)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)",
               borderRadius: 10, padding: "12px 20px",
               fontWeight: 700, fontSize: 14, cursor: "pointer",
+              display: "inline-flex", alignItems: "center", gap: 8,
             }}>
-              📋 View My Complaints
+              <ListFilter className="w-4 h-4" /> View My Complaints
             </button>
           </Link>
         </div>
@@ -113,20 +118,25 @@ export default function HomePage() {
       {/* Stats Cards */}
       <div className="stats-grid" style={{ marginBottom: 24 }}>
         {[
-          { label: "Total Submitted", value: stats.total, color: "#6366f1", emoji: "📋" },
-          { label: "Open & Pending", value: stats.open + stats.inProgress, color: "#3b82f6", emoji: "🔵" },
-          { label: "Resolved & Closed", value: stats.resolved, color: "#10b981", emoji: "✅" },
-          { label: "Urgent / Escalated", value: stats.escalated, color: "#ef4444", emoji: "🚨" },
-        ].map((s) => (
-          <div key={s.label} className="card" style={{
-            padding: "18px 12px", textAlign: "center",
-            borderTop: `4px solid ${s.color}`,
-          }}>
-            <div style={{ fontSize: 24, marginBottom: 4 }}>{s.emoji}</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 12, color: "var(--text-muted, #64748b)", marginTop: 3 }}>{s.label}</div>
-          </div>
-        ))}
+          { label: "Total Submitted", value: stats.total, color: "#6366f1", icon: FileText },
+          { label: "Open & Pending", value: stats.open + stats.inProgress, color: "#3b82f6", icon: Clock },
+          { label: "Resolved & Closed", value: stats.resolved, color: "#10b981", icon: CheckCircle2 },
+          { label: "Urgent / Escalated", value: stats.escalated, color: "#ef4444", icon: AlertTriangle },
+        ].map((s) => {
+          const Icon = s.icon;
+          return (
+            <div key={s.label} className="card" style={{
+              padding: "18px 12px", textAlign: "center",
+              borderTop: `4px solid ${s.color}`,
+            }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
+                <Icon className="w-6 h-6" style={{ color: s.color }} />
+              </div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
+              <div style={{ fontSize: 12, color: "var(--text-muted, #64748b)", marginTop: 3 }}>{s.label}</div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Urgent Alert Banner if present */}
@@ -136,7 +146,7 @@ export default function HomePage() {
           borderRadius: 16, padding: "18px 20px", marginBottom: 24,
         }}>
           <div style={{ fontWeight: 800, color: "#dc2626", marginBottom: 12, fontSize: 15, display: "flex", alignItems: "center", gap: 8 }}>
-            🚨 High Priority / Escalated Issues ({urgent.length})
+            <AlertTriangle className="w-4 h-4" /> High Priority / Escalated Issues ({urgent.length})
           </div>
           {urgent.map((c) => (
             <Link key={c.id} href={`/complaints/${c.id}`} style={{ textDecoration: "none" }}>
@@ -146,7 +156,7 @@ export default function HomePage() {
               }}>
                 <div style={{ fontWeight: 700, fontSize: 14, color: "var(--text-heading, #0f172a)" }}>{c.title}</div>
                 <div style={{ fontSize: 12, color: "var(--text-muted, #64748b)", marginTop: 3 }}>
-                  {c.id} {c.location ? `· 📍 ${c.location}` : ""} · Priority: <strong style={{ color: "#dc2626" }}>{c.priority.toUpperCase()}</strong>
+                  {c.id} {c.location ? `· ${c.location}` : ""} · Priority: <strong style={{ color: "#dc2626" }}>{c.priority.toUpperCase()}</strong>
                 </div>
               </div>
             </Link>
@@ -157,7 +167,7 @@ export default function HomePage() {
       {/* Recent Complaints Card */}
       <div className="card" style={{ padding: "24px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ fontWeight: 800, fontSize: 17, color: "var(--text-heading, #0f172a)" }}>📋 Recent Complaints</div>
+          <div style={{ fontWeight: 800, fontSize: 17, color: "var(--text-heading, #0f172a)" }}>Recent Complaints</div>
           <Link href="/complaints" style={{ textDecoration: "none", color: "#1e40af", fontWeight: 700, fontSize: 13 }}>
             View All →
           </Link>

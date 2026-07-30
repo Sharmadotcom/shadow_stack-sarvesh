@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { UserRole } from "@/types";
+import { GraduationCap, Zap, User, Wrench, Shield } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -101,7 +102,9 @@ export default function LoginPage() {
     <div style={{ maxWidth: 480, margin: "40px auto 60px" }}>
       {/* Title */}
       <div style={{ textAlign: "center", marginBottom: 24 }}>
-        <div style={{ fontSize: 42, marginBottom: 8 }}>🎓</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
+          <GraduationCap className="w-12 h-12 text-blue-600" />
+        </div>
         <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, color: "#1e293b" }}>
           CampusGrieve Auth Portal
         </h1>
@@ -117,7 +120,7 @@ export default function LoginPage() {
         boxShadow: "0 8px 20px rgba(30, 64, 175, 0.25)",
       }}>
         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}>
-          ⚡ <span>Hackathon Demo One-Click Login</span>
+          <Zap className="w-4 h-4" /> <span>Hackathon Demo One-Click Login</span>
         </div>
         <div style={{ fontSize: 12, color: "#dbeafe", marginBottom: 14 }}>
           Instant role access for presentation testing:
@@ -132,7 +135,7 @@ export default function LoginPage() {
               cursor: "pointer", transition: "transform 0.15s",
             }}
           >
-            🎓 Student
+            Student
           </button>
           <button
             onClick={() => handleQuickLogin("worker")}
@@ -143,7 +146,7 @@ export default function LoginPage() {
               cursor: "pointer", transition: "transform 0.15s",
             }}
           >
-            🛠️ Worker
+            Worker
           </button>
           <button
             onClick={() => handleQuickLogin("admin")}
@@ -154,7 +157,7 @@ export default function LoginPage() {
               cursor: "pointer", transition: "transform 0.15s",
             }}
           >
-            ⚙️ Admin
+            Admin
           </button>
         </div>
       </div>
@@ -177,7 +180,7 @@ export default function LoginPage() {
                 transition: "all 0.15s",
               }}
             >
-              {r === "student" ? "🎓 Student" : r === "worker" ? "🛠️ Worker" : "⚙️ Admin"}
+              {r === "student" ? "Student" : r === "worker" ? "Worker" : "Admin"}
             </button>
           ))}
         </div>

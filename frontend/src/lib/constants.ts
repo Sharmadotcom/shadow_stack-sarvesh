@@ -5,7 +5,7 @@ export const CATEGORIES = [
   {
     id: "electrical",
     label: "Electrical",
-    icon: "⚡",
+    icon: "Zap",
     slaHours: 4,
     color: "text-yellow-400",
     bg: "bg-yellow-400/10",
@@ -13,7 +13,7 @@ export const CATEGORIES = [
   {
     id: "plumbing",
     label: "Plumbing",
-    icon: "🔧",
+    icon: "Wrench",
     slaHours: 8,
     color: "text-blue-400",
     bg: "bg-blue-400/10",
@@ -21,7 +21,7 @@ export const CATEGORIES = [
   {
     id: "internet",
     label: "Internet / WiFi",
-    icon: "📶",
+    icon: "Wifi",
     slaHours: 6,
     color: "text-purple-400",
     bg: "bg-purple-400/10",
@@ -29,7 +29,7 @@ export const CATEGORIES = [
   {
     id: "hostel",
     label: "Hostel Room",
-    icon: "🏠",
+    icon: "Home",
     slaHours: 24,
     color: "text-green-400",
     bg: "bg-green-400/10",
@@ -37,7 +37,7 @@ export const CATEGORIES = [
   {
     id: "canteen",
     label: "Canteen / Food",
-    icon: "🍽️",
+    icon: "Utensils",
     slaHours: 12,
     color: "text-orange-400",
     bg: "bg-orange-400/10",
@@ -45,7 +45,7 @@ export const CATEGORIES = [
   {
     id: "academics",
     label: "Academics",
-    icon: "📚",
+    icon: "BookOpen",
     slaHours: 48,
     color: "text-indigo-400",
     bg: "bg-indigo-400/10",
@@ -53,7 +53,7 @@ export const CATEGORIES = [
   {
     id: "transport",
     label: "Transport",
-    icon: "🚌",
+    icon: "Bus",
     slaHours: 12,
     color: "text-teal-400",
     bg: "bg-teal-400/10",
@@ -61,7 +61,7 @@ export const CATEGORIES = [
   {
     id: "security",
     label: "Security",
-    icon: "🔒",
+    icon: "Shield",
     slaHours: 2,
     color: "text-red-400",
     bg: "bg-red-400/10",
@@ -69,7 +69,7 @@ export const CATEGORIES = [
   {
     id: "other",
     label: "Other",
-    icon: "📋",
+    icon: "FileText",
     slaHours: 48,
     color: "text-gray-400",
     bg: "bg-gray-400/10",

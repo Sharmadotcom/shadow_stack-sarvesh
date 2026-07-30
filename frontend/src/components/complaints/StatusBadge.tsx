@@ -50,17 +50,19 @@ export function PriorityBadge({ priority, className }: PriorityBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border",
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border",
         config.bg,
         config.color,
         config.border,
         className
       )}
     >
-      {priority === "critical" && "🔴 "}
-      {priority === "high" && "🟠 "}
-      {priority === "medium" && "🔵 "}
-      {priority === "low" && "⚪ "}
+      <span className={cn("w-1.5 h-1.5 rounded-full", {
+        "bg-red-500": priority === "critical",
+        "bg-orange-400": priority === "high",
+        "bg-blue-400": priority === "medium",
+        "bg-slate-400": priority === "low",
+      })} />
       {config.label}
     </span>
   );

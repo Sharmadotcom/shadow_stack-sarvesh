@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import { Complaint } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { PlusCircle, Search } from "lucide-react";
 
 const statusColor: Record<string, string> = {
   open: "#3b82f6", assigned: "#8b5cf6", in_progress: "#f59e0b",
@@ -13,7 +14,7 @@ const statusColor: Record<string, string> = {
 };
 const statusLabel: Record<string, string> = {
   open: "Open", assigned: "Assigned", in_progress: "In Progress",
-  resolved: "Resolved", closed: "Closed", escalated: "🚨 Escalated",
+  resolved: "Resolved", closed: "Closed", escalated: "Escalated",
 };
 const priorityColor: Record<string, string> = {
   low: "#6b7280", medium: "#3b82f6", high: "#f59e0b", critical: "#ef4444",
@@ -72,8 +73,9 @@ export default function ComplaintsPage() {
             background: "#1e40af", color: "#fff", border: "none",
             borderRadius: 10, padding: "12px 20px", fontWeight: 700,
             fontSize: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(30,64,175,0.25)",
+            display: "inline-flex", alignItems: "center", gap: 8,
           }}>
-            ➕ Report Issue
+            <PlusCircle className="w-4 h-4" /> Report Issue
           </button>
         </Link>
       </div>
@@ -82,7 +84,7 @@ export default function ComplaintsPage() {
       <div style={{ background: "#fff", borderRadius: 14, padding: 18, marginBottom: 20, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
         <input
           type="text"
-          placeholder="🔍  Search by issue title, location, category, or CMP-ID..."
+          placeholder="Search by issue title, location, category, or CMP-ID..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -122,7 +124,9 @@ export default function ComplaintsPage() {
             background: "#fff", borderRadius: 16, padding: "48px 24px",
             textAlign: "center", color: "#94a3b8", boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
           }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+              <Search className="w-10 h-10 text-gray-400" />
+            </div>
             <div style={{ fontWeight: 700, fontSize: 16, color: "#334155" }}>No matching complaints found</div>
             <div style={{ fontSize: 14, marginTop: 4 }}>Try clearing search or changing status filter.</div>
           </div>
@@ -141,11 +145,11 @@ export default function ComplaintsPage() {
                       {c.title}
                     </div>
                     <div style={{ fontSize: 13, color: "#64748b" }}>
-                      <strong>{c.id}</strong> · Category: <strong>{c.category}</strong> {c.location ? `· 📍 ${c.location}` : ""}
+                      <strong>{c.id}</strong> · Category: <strong>{c.category}</strong> {c.location ? `· ${c.location}` : ""}
                     </div>
                     {c.assignedTo && (
                       <div style={{ fontSize: 12, color: "#2563eb", marginTop: 6, fontWeight: 600 }}>
-                        👤 Assigned Technician: <strong>{c.assignedTo.name}</strong> ({c.assignedTo.department || "Staff"})
+                        Assigned Technician: <strong>{c.assignedTo.name}</strong> ({c.assignedTo.department || "Staff"})
                       </div>
                     )}
                   </div>

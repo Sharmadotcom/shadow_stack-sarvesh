@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { GraduationCap, Moon, Sun, LogOut, LogIn, Menu, X } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -39,29 +40,29 @@ export function Navbar() {
   const getLinks = () => {
     if (!user) {
       return [
-        { href: "/", label: "🏠 Home" },
-        { href: "/login", label: "🔑 Login / Register" },
+        { href: "/", label: "Home" },
+        { href: "/login", label: "Login / Register" },
       ];
     }
 
     if (user.role === "admin") {
       return [
-        { href: "/admin", label: "⚙️ Admin Portal" },
-        { href: "/complaints", label: "📋 All Issues" },
+        { href: "/admin", label: "Admin Portal" },
+        { href: "/complaints", label: "All Issues" },
       ];
     }
 
     if (user.role === "worker") {
       return [
-        { href: "/worker", label: "🛠️ Worker Portal" },
-        { href: "/complaints", label: "📋 Assigned Tasks" },
+        { href: "/worker", label: "Worker Portal" },
+        { href: "/complaints", label: "Assigned Tasks" },
       ];
     }
 
     return [
-      { href: "/", label: "🏠 Dashboard" },
-      { href: "/complaints", label: "📋 My Complaints" },
-      { href: "/complaints/new", label: "➕ Report Issue" },
+      { href: "/", label: "Dashboard" },
+      { href: "/complaints", label: "My Complaints" },
+      { href: "/complaints/new", label: "Report Issue" },
     ];
   };
 
@@ -83,7 +84,12 @@ export function Navbar() {
         {/* Logo */}
         <Link href={user?.role === "admin" ? "/admin" : user?.role === "worker" ? "/worker" : "/"} style={{ textDecoration: "none" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 0" }}>
-            <span style={{ fontSize: 24 }}>🎓</span>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center", color: "#fff"
+            }}>
+              <GraduationCap className="w-5 h-5" />
+            </div>
             <div>
               <div style={{ color: "#fff", fontWeight: 800, fontSize: 17, lineHeight: 1.2, letterSpacing: "-0.01em" }}>
                 CampusGrieve
@@ -129,7 +135,7 @@ export function Navbar() {
               cursor: "pointer", transition: "all 0.15s",
             }}
           >
-            <span>{theme === "light" ? "🌙" : "☀️"}</span>
+            {theme === "light" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
             <span className="nav-user-name">{theme === "light" ? "Dark" : "Light"}</span>
           </button>
 
@@ -172,7 +178,7 @@ export function Navbar() {
                   display: "flex", alignItems: "center", gap: 6,
                 }}
               >
-                <span>🚪</span>
+                <LogOut className="w-3.5 h-3.5" />
                 <span className="nav-user-name">Sign Out</span>
               </button>
             </div>
@@ -181,9 +187,9 @@ export function Navbar() {
               <button style={{
                 background: "#fff", color: "#1e40af", border: "none",
                 borderRadius: 8, padding: "8px 16px", fontWeight: 700,
-                fontSize: 13, cursor: "pointer",
+                fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
               }}>
-                🔑 Sign In
+                <LogIn className="w-4 h-4" /> Sign In
               </button>
             </Link>
           )}
@@ -196,9 +202,10 @@ export function Navbar() {
               background: "rgba(255,255,255,0.15)", border: "none",
               borderRadius: 8, padding: "8px 10px", cursor: "pointer",
               color: "#fff", fontSize: 18, lineHeight: 1,
+              display: "flex", alignItems: "center", justifyContent: "center",
             }}
           >
-            {menuOpen ? "✕" : "☰"}
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
@@ -234,7 +241,7 @@ export function Navbar() {
               cursor: "pointer", marginTop: 4, display: "flex", alignItems: "center", gap: 8,
             }}
           >
-            🚪 Sign Out
+            <LogOut className="w-4 h-4" /> Sign Out
           </div>
         )}
       </div>

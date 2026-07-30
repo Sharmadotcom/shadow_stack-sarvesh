@@ -139,7 +139,7 @@ export function SLATimer({ deadline, createdAt, status, compact = false }: SLATi
 
       {isOver && (
         <p className="text-[11px] text-red-600 font-bold mt-1">
-          ⚠️ Escalated due to SLA breach
+          Escalated due to SLA breach
         </p>
       )}
     </div>

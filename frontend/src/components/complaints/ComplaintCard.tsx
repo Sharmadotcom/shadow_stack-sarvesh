@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Clock, User, Paperclip } from "lucide-react";
+import { MapPin, Clock, User, Paperclip, Zap, Wrench, Wifi, Home, Utensils, BookOpen, Bus, Shield, FileText } from "lucide-react";
 import { Complaint } from "@/types";
 import { StatusBadge, PriorityBadge } from "./StatusBadge";
 import { SLATimer } from "./SLATimer";
 import { CATEGORIES } from "@/lib/constants";
 import { getTimeAgo, cn } from "@/lib/utils";
+
+const iconMap: Record<string, any> = {
+  Zap, Wrench, Wifi, Home, Utensils, BookOpen, Bus, Shield, FileText,
+};
 
 interface ComplaintCardProps {
   complaint: Complaint;
@@ -15,6 +19,7 @@ interface ComplaintCardProps {
 export function ComplaintCard({ complaint }: ComplaintCardProps) {
   const category = CATEGORIES.find((c) => c.id === complaint.category);
   const isCritical = complaint.priority === "critical" || complaint.status === "escalated";
+  const CategoryIcon = category?.icon ? iconMap[category.icon] || FileText : FileText;
 
   return (
     <Link href={`/complaints/${complaint.id}`}>
@@ -25,11 +30,11 @@ export function ComplaintCard({ complaint }: ComplaintCardProps) {
             {/* Category icon */}
             <div
               className={cn(
-                "w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0",
+                "w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0",
                 category?.bg ?? "bg-gray-400/10"
               )}
             >
-              {category?.icon ?? "📋"}
+              <CategoryIcon className="w-4 h-4 text-foreground" />
             </div>
 
             <div className="flex-1 min-w-0">
