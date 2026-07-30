@@ -70,7 +70,7 @@ export default function WorkerPage() {
   };
 
   const pendingTasks = complaints.filter(
-    (c) => c.status === "assigned" || c.status === "in_progress" || c.status === "escalated"
+    (c) => c.status === "open" || c.status === "assigned" || c.status === "in_progress" || c.status === "escalated"
   );
   const resolvedTasks = complaints.filter(
     (c) => c.status === "resolved" || c.status === "closed"
@@ -149,9 +149,9 @@ export default function WorkerPage() {
         {displayed.length === 0 ? (
           <div className="card" style={{ padding: "48px", textAlign: "center", color: "#94a3b8" }}>
             <div style={{ fontWeight: 700, fontSize: 16, color: "#334155" }}>
-              {activeTab === "pending" ? "No active work orders assigned!" : "No completed tasks yet."}
+              {activeTab === "pending" ? "No active work orders for your trade specialty!" : "No completed tasks yet."}
             </div>
-            <div style={{ fontSize: 13, marginTop: 4 }}>You will be notified when new complaints are assigned.</div>
+            <div style={{ fontSize: 13, marginTop: 4 }}>New student tickets matching your category will appear here automatically.</div>
           </div>
         ) : (
           displayed.map((c) => (
@@ -166,13 +166,20 @@ export default function WorkerPage() {
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
                     <span style={{
                       padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 800,
                       textTransform: "uppercase", background: priorityColor[c.priority] + "20",
                       color: priorityColor[c.priority],
                     }}>
                       {c.priority} Priority
+                    </span>
+                    <span style={{
+                      padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 800,
+                      textTransform: "uppercase", background: "#eff6ff",
+                      color: "#1d4ed8", border: "1px solid #bfdbfe",
+                    }}>
+                      {c.category}
                     </span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#64748b" }}>{c.id}</span>
                   </div>

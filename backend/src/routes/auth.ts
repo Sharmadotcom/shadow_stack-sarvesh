@@ -58,6 +58,7 @@ router.post("/login", async (req, res) => {
       email: user.email,
       role: user.role,
       name: user.name,
+      department: user.department,
     });
 
     return res.json({
@@ -131,6 +132,7 @@ router.post("/register", async (req, res) => {
       email: user.email,
       role: user.role,
       name: user.name,
+      department: user.department,
     });
 
     return res.status(201).json({
@@ -243,6 +245,7 @@ router.post("/google", async (req, res) => {
       email: user.email,
       role: user.role,
       name: user.name,
+      department: user.department,
     });
 
     return res.json({

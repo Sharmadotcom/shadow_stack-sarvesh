@@ -10,6 +10,35 @@ async function generateComplaintId() {
   return `CMP-${1001 + count}`;
 }
 
+function getMatchingCategoriesForWorker(department: string | null | undefined): string[] {
+  if (!department) return [];
+  const dept = department.toLowerCase().trim();
+
+  if (dept.includes("electric")) {
+    return ["electrical", "electrician"];
+  }
+  if (dept.includes("plumb")) {
+    return ["plumbing", "plumber"];
+  }
+  if (dept.includes("driver") || dept.includes("transport")) {
+    return ["transport", "driver", "vehicle"];
+  }
+  if (dept.includes("secur")) {
+    return ["security"];
+  }
+  if (dept.includes("tech") || dept.includes("internet") || dept.includes("wifi")) {
+    return ["internet", "academics", "technical", "technician"];
+  }
+  if (dept.includes("hostel")) {
+    return ["hostel"];
+  }
+  if (dept.includes("canteen") || dept.includes("food")) {
+    return ["canteen"];
+  }
+
+  return [dept, "other"];
+}
+
 // 1. Get List of Complaints (Role-scoped + Filterable)
 router.get("/", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -22,7 +51,11 @@ router.get("/", authenticateToken, async (req: AuthenticatedRequest, res: Respon
     if (user.role === "student") {
       where.submittedById = user.id;
     } else if (user.role === "worker") {
-      where.assignedToId = user.id;
+      const matchingCats = getMatchingCategoriesForWorker(user.department);
+      where.OR = [
+        { assignedToId: user.id },
+        { category: { in: matchingCats } }
+      ];
     }
     // Admin sees all complaints
 
@@ -37,12 +70,21 @@ router.get("/", authenticateToken, async (req: AuthenticatedRequest, res: Respon
     }
     if (search) {
       const q = String(search).toLowerCase();
-      where.OR = [
+      const searchClause = [
         { title: { contains: q } },
         { id: { contains: q } },
         { description: { contains: q } },
         { location: { contains: q } },
       ];
+      if (where.OR) {
+        where.AND = [
+          { OR: where.OR },
+          { OR: searchClause }
+        ];
+        delete where.OR;
+      } else {
+        where.OR = searchClause;
+      }
     }
 
     const complaints = await prisma.complaint.findMany({
@@ -162,6 +204,16 @@ router.get("/:id", authenticateToken, async (req: AuthenticatedRequest, res: Res
       return res.status(404).json({ error: "Complaint not found" });
     }
 
+    const user = req.user!;
+    if (user.role === "worker") {
+      const matchingCats = getMatchingCategoriesForWorker(user.department);
+      const isAssigned = complaint.assignedToId === user.id;
+      const isMatchingCategory = matchingCats.includes(complaint.category.toLowerCase());
+      if (!isAssigned && !isMatchingCategory) {
+        return res.status(403).json({ error: "Access Denied: Ticket category does not match worker specialty." });
+      }
+    }
+
     return res.json({
       ...complaint,
       attachments: complaint.attachments ? JSON.parse(complaint.attachments) : [],
@@ -183,6 +235,15 @@ router.patch("/:id/status", authenticateToken, async (req: AuthenticatedRequest,
       return res.status(404).json({ error: "Complaint not found" });
     }
 
+    if (user.role === "worker") {
+      const matchingCats = getMatchingCategoriesForWorker(user.department);
+      const isAssigned = existing.assignedToId === user.id;
+      const isMatchingCategory = matchingCats.includes(existing.category.toLowerCase());
+      if (!isAssigned && !isMatchingCategory) {
+        return res.status(403).json({ error: "Access Denied: You can only update tickets matching your specialty." });
+      }
+    }
+
     const oldStatus = existing.status;
     const now = new Date();
 
@@ -190,6 +251,10 @@ router.patch("/:id/status", authenticateToken, async (req: AuthenticatedRequest,
       status,
       updatedAt: now,
     };
+
+    if (user.role === "worker" && !existing.assignedToId) {
+      updateData.assignedToId = user.id;
+    }
 
     if (status === "resolved" && !existing.resolvedAt) {
       updateData.resolvedAt = now;

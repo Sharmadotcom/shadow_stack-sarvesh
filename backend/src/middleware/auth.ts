@@ -14,6 +14,7 @@ export interface AuthenticatedRequest<
     email: string;
     role: "student" | "worker" | "admin";
     name: string;
+    department?: string | null;
   };
 }
 
@@ -52,6 +53,7 @@ export function generateToken(payload: {
   email: string;
   role: string;
   name: string;
+  department?: string | null;
 }) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 }
