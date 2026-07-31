@@ -6,11 +6,11 @@
 
 #  Team Members
 
-- Aryan Dev
-- Soumil Das
-- Sarvesh Sharma
-- Aryan Parth
-- Rajat Kumar
+- Aryan Dev 24BEC10070
+- Soumil Das 24BAI10128
+- Sarvesh Sharma 24BCY10008
+- Aryan Parth 24BCY10337
+- Rajat Kumar 24BCY10378
 
 **Campus Care** is an enterprise-grade, role-based web application designed to streamline campus facility management, issue reporting, maintenance workflows, and service quality assurance. Built with a high-performance modern tech stack, Campus Care features real-time Socket.io updates, strict Role-Based Access Control (RBAC), automated SLA countdown timers, worker trade-stack filtering, photo proof verification, and an automated 8-hour resolution approval engine.
 
