@@ -346,17 +346,6 @@ export default function WorkerPage() {
                   <div style={{ fontSize: 13, fontWeight: 800, color: "#3730a3", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.02em" }}>
                     Worker Actions & Updates
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Add work progress note / resolution details (e.g. 'Replaced blown fuse')..."
-                    value={noteMap[c.id] || ""}
-                    onChange={(e) => setNoteMap({ ...noteMap, [c.id]: e.target.value })}
-                    style={{
-                      width: "100%", padding: "14px 16px", border: "1.5px solid #c7d2fe",
-                      borderRadius: 12, fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 16,
-                      background: "#ffffff", transition: "border 0.2s",
-                    }}
-                  />
                   <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                     {c.status !== "in_progress" && (
                       <button
