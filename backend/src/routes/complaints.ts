@@ -1,6 +1,7 @@
 import { Router, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { authenticateToken, AuthenticatedRequest } from "../middleware/auth";
+import { notifyComplaintCreated, notifyComplaintUpdated } from "../lib/socket";
 
 const router = Router();
 
@@ -201,10 +202,14 @@ router.post("/", authenticateToken, async (req: AuthenticatedRequest, res: Respo
       },
     });
 
-    return res.status(201).json({
+    const resultObj = {
       ...complaint,
       attachments: complaint.attachments ? JSON.parse(complaint.attachments) : [],
-    });
+    };
+
+    notifyComplaintCreated(resultObj);
+
+    return res.status(201).json(resultObj);
   } catch (error) {
     console.error("Create complaint error:", error);
     return res.status(500).json({ error: "Failed to create complaint" });
@@ -318,10 +323,12 @@ router.patch("/:id/status", authenticateToken, async (req: AuthenticatedRequest,
       },
     });
 
-    return res.json({
+    const resultObj = {
       ...updated,
       attachments: updated.attachments ? JSON.parse(updated.attachments) : [],
-    });
+    };
+    notifyComplaintUpdated(resultObj, "status_updated", comment);
+    return res.json(resultObj);
   } catch (error) {
     console.error("Update status error:", error);
     return res.status(500).json({ error: "Failed to update complaint status" });
@@ -379,10 +386,12 @@ router.patch("/:id/approve", authenticateToken, async (req: AuthenticatedRequest
       },
     });
 
-    return res.json({
+    const resultObj = {
       ...updated,
       attachments: updated.attachments ? JSON.parse(updated.attachments) : [],
-    });
+    };
+    notifyComplaintUpdated(resultObj, "approved", "Student approved resolution");
+    return res.json(resultObj);
   } catch (error) {
     console.error("Approve resolution error:", error);
     return res.status(500).json({ error: "Failed to approve complaint resolution" });
@@ -437,10 +446,12 @@ router.patch("/:id/reject", authenticateToken, async (req: AuthenticatedRequest,
       },
     });
 
-    return res.json({
+    const resultObj = {
       ...updated,
       attachments: updated.attachments ? JSON.parse(updated.attachments) : [],
-    });
+    };
+    notifyComplaintUpdated(resultObj, "rejected", reason);
+    return res.json(resultObj);
   } catch (error) {
     console.error("Reject resolution error:", error);
     return res.status(500).json({ error: "Failed to submit dissatisfaction feedback" });
@@ -494,10 +505,12 @@ router.patch("/:id/accept", authenticateToken, async (req: AuthenticatedRequest,
       },
     });
 
-    return res.json({
+    const resultObj = {
       ...updated,
       attachments: updated.attachments ? JSON.parse(updated.attachments) : [],
-    });
+    };
+    notifyComplaintUpdated(resultObj, "claimed", `Task claimed by ${user.name}`);
+    return res.json(resultObj);
   } catch (error) {
     console.error("Accept task error:", error);
     return res.status(500).json({ error: "Failed to accept task" });
@@ -549,10 +562,12 @@ router.patch("/:id/assign", authenticateToken, async (req: AuthenticatedRequest,
       },
     });
 
-    return res.json({
+    const resultObj = {
       ...updated,
       attachments: updated.attachments ? JSON.parse(updated.attachments) : [],
-    });
+    };
+    notifyComplaintUpdated(resultObj, "assigned", `Task assigned to ${worker.name}`);
+    return res.json(resultObj);
   } catch (error) {
     console.error("Assign worker error:", error);
     return res.status(500).json({ error: "Failed to assign worker" });

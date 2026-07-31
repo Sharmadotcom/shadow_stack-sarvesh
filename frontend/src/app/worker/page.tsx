@@ -8,6 +8,7 @@ import { Complaint, Status } from "@/types";
 import { toast } from "sonner";
 import Link from "next/link";
 import { SLATimer } from "@/components/complaints/SLATimer";
+import { useSocket } from "@/lib/socket";
 
 const priorityColor: Record<string, string> = {
   low: "#6b7280", medium: "#3b82f6", high: "#f59e0b", critical: "#ef4444",
@@ -16,6 +17,18 @@ const priorityColor: Record<string, string> = {
 export default function WorkerPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+
+  // Socket.io Real-time Trade Stack Listener
+  useSocket((eventData) => {
+    if (user && (user.role === "worker" || user.role === "admin")) {
+      fetchWorkerTasks();
+      if (eventData.event === "COMPLAINT_CREATED") {
+        toast.info(`⚡ New Ticket in Trade Stack: ${eventData.complaint?.title || "New Issue Reported"}`);
+      } else if (eventData.message) {
+        toast.info(`⚡ Live Update: ${eventData.message}`);
+      }
+    }
+  });
 
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);

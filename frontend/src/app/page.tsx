@@ -11,6 +11,7 @@ import { Complaint, UserRole } from "@/types";
 import { getTimeAgo } from "@/lib/utils";
 
 import { SLATimer } from "@/components/complaints/SLATimer";
+import { useSocket } from "@/lib/socket";
 
 const statusColor: Record<string, string> = {
   open: "#3b82f6", assigned: "#8b5cf6", in_progress: "#f59e0b",
@@ -67,6 +68,16 @@ export default function HomePage() {
       setDashboardLoading(false);
     }
   };
+
+  // Socket.io Realtime Listener
+  useSocket((eventData: any) => {
+    if (user && user.role === "student") {
+      fetchStudentData();
+      if (eventData.message || eventData.complaint?.title) {
+        toast.info(`⚡ Realtime Notification: ${eventData.message || eventData.complaint?.title}`);
+      }
+    }
+  });
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -9,6 +9,7 @@ import { Complaint } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 import { SLATimer } from "@/components/complaints/SLATimer";
 import { getTimeAgo } from "@/lib/utils";
+import { useSocket } from "@/lib/socket";
 
 const statusColor: Record<string, string> = {
   open: "#3b82f6", assigned: "#8b5cf6", in_progress: "#f59e0b",
@@ -39,6 +40,16 @@ export default function ComplaintDetailPage() {
   const [showRejectionForm, setShowRejectionForm] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [submittingApproval, setSubmittingApproval] = useState(false);
+
+  // Realtime Socket Listener
+  useSocket((eventData) => {
+    if (eventData.complaint?.id === id) {
+      fetchDetail();
+      if (eventData.message) {
+        toast.info(`⚡ Live Update: ${eventData.message}`);
+      }
+    }
+  });
 
   useEffect(() => {
     fetchDetail();

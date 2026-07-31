@@ -11,6 +11,8 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 
+import { useSocket } from "@/lib/socket";
+
 const statusColor: Record<string, string> = {
   open: "#3b82f6", assigned: "#8b5cf6", in_progress: "#f59e0b",
   resolved: "#10b981", closed: "#6b7280", escalated: "#ef4444",
@@ -93,6 +95,16 @@ export default function AdminPage() {
       setLoading(false);
     }
   };
+
+  // Socket.io Real-Time Listener for Admin
+  useSocket((eventData: any) => {
+    if (user && user.role === "admin") {
+      loadAdminData();
+      if (eventData.message || eventData.complaint?.title) {
+        toast.info(`⚡ Live Admin Notification: ${eventData.message || eventData.complaint?.title}`);
+      }
+    }
+  });
 
   const handleSaveComplaint = async (c: Complaint) => {
     try {

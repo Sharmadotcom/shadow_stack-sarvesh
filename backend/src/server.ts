@@ -1,4 +1,5 @@
 import express from "express";
+import http from "http";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
@@ -11,11 +12,16 @@ import analyticsRoutes from "./routes/analytics";
 import categoryRoutes from "./routes/categories";
 import userRoutes from "./routes/users";
 import { checkAndEscalateSLABreaches } from "./services/slaEngine";
+import { initSocket } from "./lib/socket";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
+
+// Initialize Socket.io server for real-time WebSocket communication
+initSocket(server);
 
 // Ensure uploads directory exists on startup
 const uploadsPath = path.join(__dirname, "../uploads");
@@ -51,6 +57,6 @@ setInterval(async () => {
 // Run immediate check on start
 checkAndEscalateSLABreaches();
 
-app.listen(PORT, () => {
-  console.log(`Grievance Redressal Backend API running on http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Grievance Redressal Backend API with Socket.io running on http://localhost:${PORT}`);
 });
