@@ -244,10 +244,6 @@ export default function HomePage() {
             <div style={{ position: "absolute", top: -50, right: -50, width: 200, height: 200, background: "rgba(255,255,255,0.03)", borderRadius: "50%", filter: "blur(40px)" }} />
             
             <div style={{ position: "relative", zIndex: 1 }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.1)", padding: "6px 14px", borderRadius: 100, fontSize: 12, fontWeight: 800, marginBottom: 24, border: "1px solid rgba(255,255,255,0.1)" }}>
-                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#38bdf8" }}></span>
-                SYSTEM GATEWAY
-              </div>
               <h1 style={{ margin: "0 0 12px", fontSize: 32, fontWeight: 800, letterSpacing: "-0.02em" }}>
                 CampusGrieve
               </h1>
