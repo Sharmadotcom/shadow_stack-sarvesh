@@ -343,43 +343,6 @@ export default function AdminPage() {
               </div>
             </div>
           </div>
-
-          {/* Maintenance Staff Performance Leaderboard */}
-          <div className="glass-panel" style={{ padding: "32px", borderRadius: 24, background: "#ffffff", boxShadow: "0 12px 40px -12px rgba(0,0,0,0.08)" }}>
-            <h3 style={{ margin: "0 0 24px", fontSize: 20, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
-              Staff Performance Leaderboard
-            </h3>
-            <div style={{ overflowX: "auto", borderRadius: 16, border: "1px solid #f1f5f9" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-                <thead>
-                  <tr style={{ background: "#f8fafc", textAlign: "left", color: "#64748b", borderBottom: "2px solid #e2e8f0" }}>
-                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Technician</th>
-                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Department</th>
-                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Assigned Jobs</th>
-                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Resolved</th>
-                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Service Rating</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analytics?.workerStats?.map((w: any, idx: number) => (
-                    <tr key={w.id} style={{ borderBottom: "1px solid #f1f5f9", background: idx % 2 === 0 ? "#ffffff" : "#fdfdfd", transition: "background 0.2s ease" }}
-                      onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"}
-                      onMouseOut={(e) => e.currentTarget.style.background = idx % 2 === 0 ? "#ffffff" : "#fdfdfd"}>
-                      <td style={{ padding: "16px 20px", fontWeight: 800, color: "#0f172a" }}>
-                        <span style={{ color: "#94a3b8", marginRight: 8 }}>#{idx + 1}</span>{w.name}
-                      </td>
-                      <td style={{ padding: "16px 20px", color: "#64748b", fontWeight: 500, textTransform: "capitalize" }}>{w.department}</td>
-                      <td style={{ padding: "16px 20px", fontWeight: 700, color: "#475569" }}>{w.assignedCount}</td>
-                      <td style={{ padding: "16px 20px", fontWeight: 800, color: "#10b981" }}>{w.resolvedCount}</td>
-                      <td style={{ padding: "16px 20px", fontWeight: 800, color: "#f59e0b" }}>
-                        ★ {w.avgRating} / 5.0
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       )}
 

@@ -63,14 +63,18 @@ export function Navbar() {
         <Link href={getRoleHome()} style={{ textDecoration: "none" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: 14,
+              width: 46, height: 46, borderRadius: 14,
               background: "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 18, fontWeight: 900, color: "#ffffff",
               boxShadow: "0 8px 20px rgba(37, 99, 235, 0.25)",
               border: "1px solid rgba(255, 255, 255, 0.2)",
+              color: "#ffffff", flexShrink: 0
             }}>
-              CC
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M12 8v8"/>
+                <path d="M8 12h8"/>
+              </svg>
             </div>
             <div>
               <div style={{ color: "#0f172a", fontWeight: 900, fontSize: 22, lineHeight: 1.1, letterSpacing: "-0.04em" }}>

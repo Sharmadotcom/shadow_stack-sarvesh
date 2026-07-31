@@ -118,6 +118,25 @@ export default function ComplaintDetailPage() {
     }
   };
 
+  const [escalating, setEscalating] = useState(false);
+
+  const handleAdminEscalate = async () => {
+    if (user?.role !== "admin") {
+      toast.error("Only Administrators are permitted to escalate tickets.");
+      return;
+    }
+    setEscalating(true);
+    try {
+      await api.escalateComplaint(id, "critical", "Admin priority override to Critical");
+      toast.success("Ticket escalated to Critical priority!");
+      await fetchDetail();
+    } catch (err: any) {
+      toast.error("Escalation failed: " + err.message);
+    } finally {
+      setEscalating(false);
+    }
+  };
+
   const handleRatingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmittingRating(true);
@@ -223,6 +242,28 @@ export default function ComplaintDetailPage() {
               }}
             >
               {closing ? "Closing..." : "✓ Close Grievance"}
+            </button>
+          </div>
+        )}
+
+        {/* Admin Priority Escalation (Admin Only) */}
+        {user?.role === "admin" && !isClosed && (
+          <div style={{ marginTop: 24, padding: "20px 24px", background: "#fef2f2", borderRadius: 16, border: "1px solid #fecaca", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#991b1b" }}>Admin Priority Escalation</div>
+              <div style={{ fontSize: 13, color: "#b91c1c", marginTop: 2 }}>Only Administrators can manually escalate this ticket's priority level to Critical.</div>
+            </div>
+            <button
+              onClick={handleAdminEscalate}
+              disabled={escalating || complaint.priority === "critical"}
+              style={{
+                padding: "12px 24px", background: complaint.priority === "critical" ? "#94a3b8" : "#dc2626", color: "#ffffff",
+                border: "none", borderRadius: 12, fontWeight: 800, fontSize: 14,
+                cursor: complaint.priority === "critical" ? "not-allowed" : "pointer",
+                boxShadow: complaint.priority === "critical" ? "none" : "0 4px 14px rgba(220, 38, 38, 0.3)", transition: "all 0.2s"
+              }}
+            >
+              {escalating ? "Escalating..." : complaint.priority === "critical" ? "Already Critical Priority" : "🔥 Escalate Ticket"}
             </button>
           </div>
         )}
