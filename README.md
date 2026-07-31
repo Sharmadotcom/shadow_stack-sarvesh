@@ -1,12 +1,24 @@
-# 🏫 Campus Care — Smart Campus Grievance Redressal & Maintenance System
+# CampusCare - Smart Grievance & Maintenance Tracker
+
+> **Team Name:** Shadow Stack
+
+---
+
+#  Team Members
+
+- Aryan Dev
+- Soumil Das
+- Sarvesh Sharma
+- Aryan Parth
+- Rajat Kumar
 
 **Campus Care** is an enterprise-grade, role-based web application designed to streamline campus facility management, issue reporting, maintenance workflows, and service quality assurance. Built with a high-performance modern tech stack, Campus Care features real-time Socket.io updates, strict Role-Based Access Control (RBAC), automated SLA countdown timers, worker trade-stack filtering, photo proof verification, and an automated 8-hour resolution approval engine.
 
 ---
 
-## 🚀 Key Features & Architectural Highlights
+##  Key Features & Architectural Highlights
 
-### 👨‍🎓 1. Student Portal
+###  1. Student Portal
 * **Issue Submission**: Report campus infrastructure, electrical, plumbing, carpentry, IT/network, or HVAC issues with category tags, location details, and photo damage attachments.
 * **Real-time SLA Tracking**: Live countdown timers (`SLATimer`) for each reported grievance based on category-specific Service Level Agreements (SLAs).
 * **Two-Step Resolution Verification**:
@@ -16,7 +28,7 @@
   * **Unsatisfied**: Requires a mandatory reason from the student and automatically returns the ticket to the maintenance stack for re-work.
 * **8-Hour Auto-Closure Safety**: If no action is taken by the student within 8 hours of approval request, the system automatically marks the ticket as satisfied and closed.
 
-### 👨‍🔧 2. Maintenance Worker / Technician Portal
+###  2. Maintenance Worker / Technician Portal
 * **Department & Trade Filtering**: Strict trade isolation ensuring technicians only see tickets relevant to their specialization (e.g. Electrical staff cannot view plumbing issues).
 * **Unassigned Stack Claiming**: Tickets are not forcibly auto-assigned; workers can browse their trade stack and click **Accept & Claim Task** to assign tickets to themselves.
 * **Job Progress & Proof Upload**:
@@ -24,7 +36,7 @@
   * Upload **Completion/Repair Proof Photos** via integrated multipart storage before requesting student review.
 * **Completed Orders History**: Comprehensive log of resolved and closed work orders with student rating feedback.
 
-### 🛡️ 3. Admin Control Center
+###  3. Admin Control Center
 * **Executive Analytics Dashboard**: Real-time visual metrics powered by Recharts:
   * Overall Complaint Distribution (Open, Assigned, In Progress, Resolved, Escalated, SLA Breaches).
   * Interactive Pie Charts for Category Breakdown.
@@ -33,13 +45,13 @@
 * **Manual Technician Allocation**: Override or assign unallocated tickets to specific registered technicians.
 * **Admin-Exclusive Escalation**: Strictly scoped capability permitting only Administrators to override ticket priority levels to `Critical` / `Escalated`.
 
-### ⚡ 4. Real-time Socket.io Integration
+###  4. Real-time Socket.io Integration
 * Full bi-directional WebSocket communication (`useSocket` hook on frontend, Socket.io on Node backend).
 * Real-time push notifications across active sessions when tickets are created, assigned, updated, or approved—eliminating the need for manual page refreshes.
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 ### **Frontend**
 | Technology | Role / Purpose |
@@ -65,7 +77,7 @@
 
 ---
 
-## 📁 Repository Directory Structure
+##  Repository Directory Structure
 
 ```
 shadow_stack-sarvesh-main/
@@ -116,7 +128,7 @@ shadow_stack-sarvesh-main/
 
 ---
 
-## 🗄️ Database Schema Summary (Prisma ORM)
+##  Database Schema Summary (Prisma ORM)
 
 * **`User`**: System accounts (`student`, `worker`, `admin`) with authentication credentials, roll numbers, department/trade specializations, and Google IDs.
 * **`Complaint`**: Central grievance record tracking priority (`low`, `medium`, `high`, `critical`), status (`open`, `assigned`, `in_progress`, `pending_approval`, `resolved`, `closed`, `escalated`), location, original damage photos, assigned technician, SLA deadlines, and approval request timestamps.
@@ -126,7 +138,7 @@ shadow_stack-sarvesh-main/
 
 ---
 
-## 🚦 System Workflow & Lifecycle
+##  System Workflow & Lifecycle
 
 ```mermaid
 graph TD
@@ -145,7 +157,7 @@ graph TD
 
 ---
 
-## ⚙️ Environment Setup & Local Installation
+##  Environment Setup & Local Installation
 
 ### Prerequisites
 * **Node.js**: v18.x or higher
@@ -183,7 +195,7 @@ npm run dev
 
 ---
 
-## 🛡️ Role Access Matrix
+##  Role Access Matrix
 
 | Feature | Student | Worker | Admin |
 | :--- | :---: | :---: | :---: |
@@ -199,7 +211,7 @@ npm run dev
 
 ---
 
-## 📝 License & Maintenance
+##  License & Maintenance
 
 This project is built and maintained for smart campus administration. Designed with a modular architecture for easy scalability, extension to multi-tenant educational institutions, and integration with third-party IoT maintenance systems.
 ```
