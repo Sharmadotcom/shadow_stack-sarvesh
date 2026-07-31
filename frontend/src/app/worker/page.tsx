@@ -34,6 +34,8 @@ export default function WorkerPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"stack" | "assigned" | "resolved">("stack");
   const [noteMap, setNoteMap] = useState<Record<string, string>>({});
+  const [proofMap, setProofMap] = useState<Record<string, string>>({});
+  const [uploadingProof, setUploadingProof] = useState<Record<string, boolean>>({});
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -68,6 +70,22 @@ export default function WorkerPage() {
     }
   };
 
+  const handleProofUpload = async (complaintId: string, files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploadingProof((prev) => ({ ...prev, [complaintId]: true }));
+    try {
+      const res = await api.uploadImages(Array.from(files));
+      if (res && res.urls && res.urls.length > 0) {
+        setProofMap((prev) => ({ ...prev, [complaintId]: res.urls[0] }));
+        toast.success("Resolution photo uploaded successfully!");
+      }
+    } catch (err: any) {
+      toast.error("Failed to upload completion photo: " + err.message);
+    } finally {
+      setUploadingProof((prev) => ({ ...prev, [complaintId]: false }));
+    }
+  };
+
   const handleAcceptTask = async (complaintId: string) => {
     setUpdatingId(complaintId);
     try {
@@ -85,7 +103,10 @@ export default function WorkerPage() {
   const handleStatusChange = async (complaintId: string, newStatus: Status) => {
     setUpdatingId(complaintId);
     try {
-      const note = noteMap[complaintId] || "";
+      let note = noteMap[complaintId] || "";
+      if (proofMap[complaintId]) {
+        note = `[PROOF_IMAGE:${proofMap[complaintId]}] ${note}`.trim();
+      }
       await api.updateStatus(complaintId, newStatus, note);
       toast.success(`Task ${complaintId} status updated to ${newStatus.toUpperCase()}`);
       await fetchWorkerTasks();
@@ -346,6 +367,43 @@ export default function WorkerPage() {
                   <div style={{ fontSize: 13, fontWeight: 800, color: "#3730a3", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.02em" }}>
                     Worker Actions & Updates
                   </div>
+                  
+                  {/* Photo Upload Area for Student Review */}
+                  <div style={{ background: "#ffffff", padding: "14px 18px", borderRadius: 12, border: "1px dashed #a5b4fc", marginBottom: 16 }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: "#4338ca", marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                      <span>📷</span> Upload Completion Photo / Proof (Optional):
+                    </div>
+                    <div style={{ fontSize: 12, color: "#64748b", marginBottom: 10 }}>
+                      The student will be able to review this photo when verifying your work.
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                      <label style={{
+                        padding: "8px 16px", background: "#f1f5f9", color: "#334155",
+                        borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer",
+                        border: "1px solid #cbd5e1", display: "inline-block"
+                      }}>
+                        {uploadingProof[c.id] ? "Uploading Photo..." : "Choose Photo..."}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleProofUpload(c.id, e.target.files)}
+                          disabled={uploadingProof[c.id]}
+                          style={{ display: "none" }}
+                        />
+                      </label>
+                      {proofMap[c.id] && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <img
+                            src={`http://localhost:5000${proofMap[c.id]}`}
+                            alt="Resolution Proof"
+                            style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover", border: "1.5px solid #16a34a" }}
+                          />
+                          <span style={{ fontSize: 12, fontWeight: 800, color: "#16a34a" }}>✓ Completion Photo Attached</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                     {c.status !== "in_progress" && (
                       <button

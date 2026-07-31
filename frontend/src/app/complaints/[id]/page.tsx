@@ -291,19 +291,49 @@ export default function ComplaintDetailPage() {
       </div>
 
       {/* STUDENT APPROVAL CARD (When Worker Completed Work & Status is Pending Approval) */}
-      {isStudentOwner && complaint.status === "pending_approval" && (
-        <div className="glass-panel" style={{ padding: "32px", marginTop: 24, borderRadius: 24, background: "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)", border: "1.5px solid #c7d2fe", boxShadow: "0 12px 30px -10px rgba(79, 70, 229, 0.2)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 20 }}>
-            <div style={{ flex: 1, minWidth: 280 }}>
-              <div style={{ fontSize: 20, fontWeight: 900, color: "#3730a3", marginBottom: 8, letterSpacing: "-0.01em" }}>
-                Worker Completed Repair — Approval Required
+      {isStudentOwner && complaint.status === "pending_approval" && (() => {
+        let proofImage: string | null = null;
+        if (complaint.auditLogs) {
+          for (const log of complaint.auditLogs) {
+            if (log.comment && log.comment.includes("[PROOF_IMAGE:")) {
+              const match = log.comment.match(/\[PROOF_IMAGE:(.*?)\]/);
+              if (match && match[1]) {
+                proofImage = match[1];
+                break;
+              }
+            }
+          }
+        }
+
+        return (
+          <div className="glass-panel" style={{ padding: "32px", marginTop: 24, borderRadius: 24, background: "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)", border: "1.5px solid #c7d2fe", boxShadow: "0 12px 30px -10px rgba(79, 70, 229, 0.2)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 20 }}>
+              <div style={{ flex: 1, minWidth: 280 }}>
+                <div style={{ fontSize: 20, fontWeight: 900, color: "#3730a3", marginBottom: 8, letterSpacing: "-0.01em" }}>
+                  Worker Completed Repair — Approval Required
+                </div>
+                <div style={{ fontSize: 14, color: "#4338ca", lineHeight: 1.5 }}>
+                  The technician completed the repair and requested your approval. Please review the work. Are you satisfied with the resolution?
+                </div>
               </div>
-              <div style={{ fontSize: 14, color: "#4338ca", lineHeight: 1.5 }}>
-                The technician completed the repair and requested your approval. Please review the work. Are you satisfied with the resolution?
-              </div>
+              <SLATimer deadline={complaint.slaDeadline} status={complaint.status} approvalRequestedAt={complaint.approvalRequestedAt} />
             </div>
-            <SLATimer deadline={complaint.slaDeadline} status={complaint.status} approvalRequestedAt={complaint.approvalRequestedAt} />
-          </div>
+
+            {/* Display Technician Resolution Proof Photo if provided */}
+            {proofImage && (
+              <div style={{ marginTop: 16, marginBottom: 20, background: "#ffffff", padding: "18px", borderRadius: 16, border: "1.5px solid #c7d2fe", boxShadow: "0 4px 14px rgba(79, 70, 229, 0.08)" }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: "#3730a3", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                  <span>📷</span> Technician's Completion / Repair Proof Photo:
+                </div>
+                <a href={`http://localhost:5000${proofImage}`} target="_blank" rel="noreferrer" style={{ display: "inline-block", borderRadius: 12, overflow: "hidden" }}>
+                  <img
+                    src={`http://localhost:5000${proofImage}`}
+                    alt="Technician Completion Proof"
+                    style={{ maxWidth: "100%", maxHeight: 260, borderRadius: 12, objectFit: "cover", border: "1px solid #cbd5e1", display: "block" }}
+                  />
+                </a>
+              </div>
+            )}
 
           <div style={{ display: "flex", gap: 16, marginTop: 24, flexWrap: "wrap" }}>
             <button
@@ -362,8 +392,9 @@ export default function ComplaintDetailPage() {
               </button>
             </form>
           )}
-        </div>
-      )}
+          </div>
+        );
+      })()}
 
       {/* SERVICE RATING CARD (Available when Resolved or Closed) */}
       {(complaint.status === "resolved" || complaint.status === "closed") && (

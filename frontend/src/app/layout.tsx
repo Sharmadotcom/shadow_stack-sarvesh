@@ -5,8 +5,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
-  title: "CampusGrieve — Redressal & Maintenance System",
-  description: "Grievance redressal, SLA tracking, priority escalation and maintenance system for students, workers, and admin.",
+  title: "Campus Care — Redressal & Maintenance System",
+  description: "Campus Care: Grievance redressal, SLA tracking, priority escalation and maintenance system for students, workers, and admin.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

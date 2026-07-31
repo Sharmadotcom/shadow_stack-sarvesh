@@ -50,9 +50,9 @@ export function Sidebar() {
             <Zap className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="font-bold text-sm gradient-text">CampusGrieve</p>
+            <p className="font-bold text-sm gradient-text">Campus Care</p>
             <p className="text-[10px] text-muted-foreground">
-              Grievance Tracker
+              Campus Care System
             </p>
           </div>
         </Link>

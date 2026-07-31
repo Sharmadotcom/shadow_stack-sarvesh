@@ -190,7 +190,7 @@ export default function HomePage() {
   if (authLoading) {
     return (
       <div style={{ textAlign: "center", padding: "60px 0", color: "#64748b" }}>
-        <div style={{ fontWeight: 600 }}>Loading CampusGrieve Portal...</div>
+        <div style={{ fontWeight: 600 }}>Loading Campus Care Portal...</div>
       </div>
     );
   }
@@ -199,28 +199,42 @@ export default function HomePage() {
   if (!user) {
     const portalConfig = {
       student: {
-        title: "Student Grievance Portal",
+        title: "Student Portal",
         subtitle: "Report campus maintenance issues, track resolution SLA, and rate service",
         badgeColor: "#2563eb",
         badgeBg: "#eff6ff",
-        icon: "",
         placeholderEmail: "student@campus.edu",
+        figurine: (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        ),
       },
       worker: {
-        title: "Maintenance Worker Portal",
+        title: "Maintenance Staff Portal",
         subtitle: "View assigned work orders, update job status, and log resolution notes",
         badgeColor: "#d97706",
         badgeBg: "#fffbeb",
-        icon: "",
         placeholderEmail: "worker@campus.edu",
+        figurine: (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+        ),
       },
       admin: {
         title: "Admin Control Center",
         subtitle: "Campus analytics dashboard, worker assignment, and user administration",
         badgeColor: "#dc2626",
         badgeBg: "#fef2f2",
-        icon: "",
         placeholderEmail: "admin@campus.edu",
+        figurine: (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        ),
       },
     };
 
@@ -245,7 +259,7 @@ export default function HomePage() {
             
             <div style={{ position: "relative", zIndex: 1 }}>
               <h1 style={{ margin: "0 0 12px", fontSize: 32, fontWeight: 800, letterSpacing: "-0.02em" }}>
-                CampusGrieve
+                Campus Care
               </h1>
               <p style={{ color: "#94a3b8", fontSize: 15, lineHeight: 1.6, marginBottom: 40 }}>
                 A centralized, role-based platform for campus maintenance, analytics, and issue resolution.
@@ -270,11 +284,12 @@ export default function HomePage() {
                       }}
                     >
                       <div style={{
-                        width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
-                        background: isSelected ? cfg.badgeColor : "rgba(255,255,255,0.05)",
-                        color: "#fff", fontWeight: 800, fontSize: 18,
+                        width: 48, height: 48, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center",
+                        background: isSelected ? cfg.badgeColor : "rgba(255,255,255,0.08)",
+                        color: "#fff", boxShadow: isSelected ? `0 4px 14px ${cfg.badgeColor}50` : "none",
+                        transition: "all 0.2s ease"
                       }}>
-                        {role === "student" ? "S" : role === "worker" ? "W" : "A"}
+                        {cfg.figurine}
                       </div>
                       <div>
                         <div style={{ fontWeight: 800, fontSize: 15, color: isSelected ? "#fff" : "#cbd5e1", textTransform: "capitalize" }}>
@@ -293,13 +308,23 @@ export default function HomePage() {
 
           {/* Right Panel: Authentication Form */}
           <div style={{ flex: "1.5 1 500px", padding: "48px 56px", background: "#ffffff", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <div style={{ marginBottom: 32 }}>
-              <h2 style={{ margin: "0 0 8px", fontSize: 24, fontWeight: 800, color: current.badgeColor }}>
-                {current.title}
-              </h2>
-              <p style={{ margin: 0, color: "#64748b", fontSize: 14 }}>
-                {current.subtitle}
-              </p>
+            <div style={{ marginBottom: 32, display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{
+                width: 52, height: 52, borderRadius: 16, background: current.badgeBg,
+                color: current.badgeColor, display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: `0 8px 20px ${current.badgeColor}20`, border: `1px solid ${current.badgeColor}30`,
+                flexShrink: 0
+              }}>
+                {current.figurine}
+              </div>
+              <div>
+                <h2 style={{ margin: "0 0 4px", fontSize: 24, fontWeight: 800, color: current.badgeColor }}>
+                  {current.title}
+                </h2>
+                <p style={{ margin: 0, color: "#64748b", fontSize: 13 }}>
+                  {current.subtitle}
+                </p>
+              </div>
             </div>
 
             {/* Google OAuth Button */}

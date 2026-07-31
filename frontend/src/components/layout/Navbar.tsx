@@ -66,15 +66,15 @@ export function Navbar() {
               width: 44, height: 44, borderRadius: 14,
               background: "linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 20, fontWeight: 900, color: "#ffffff",
+              fontSize: 18, fontWeight: 900, color: "#ffffff",
               boxShadow: "0 8px 20px rgba(37, 99, 235, 0.25)",
               border: "1px solid rgba(255, 255, 255, 0.2)",
             }}>
-              CG
+              CC
             </div>
             <div>
               <div style={{ color: "#0f172a", fontWeight: 900, fontSize: 22, lineHeight: 1.1, letterSpacing: "-0.04em" }}>
-                CampusGrieve
+                Campus Care
               </div>
               <div style={{ color: "#64748b", fontSize: 12, fontWeight: 700, marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10b981", display: "inline-block", boxShadow: "0 0 10px rgba(16, 185, 129, 0.5)" }}></span>
