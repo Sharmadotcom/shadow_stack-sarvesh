@@ -208,20 +208,32 @@ export default function AdminPage() {
 
   return (
     <div>
-      {/* Header & Tabs */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+      {/* Header Banner */}
+      <div className="hero-gradient" style={{
+        padding: "32px 36px", marginBottom: 28,
+        display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20,
+      }}>
         <div>
-          <h1 style={{ margin: "0 0 4px", fontSize: 24, fontWeight: 800, color: "#0f172a" }}>Admin Control Center</h1>
-          <p style={{ margin: 0, color: "#64748b", fontSize: 14 }}>Real-time analytics, issue management, worker allocation & user administration</p>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", borderRadius: 100, padding: "5px 14px", fontSize: 12, fontWeight: 800, marginBottom: 10, border: "1px solid rgba(255,255,255,0.2)" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ef4444", display: "inline-block" }}></span>
+            SYSTEM ADMINISTRATION CONTROL ROOM
+          </div>
+          <h1 style={{ margin: "0 0 6px", fontSize: 26, fontWeight: 800, letterSpacing: "-0.03em" }}>
+            Admin Control Center
+          </h1>
+          <p style={{ margin: 0, color: "#cbd5e1", fontSize: 14 }}>
+            Real-time analytics, issue management, worker allocation & user administration.
+          </p>
         </div>
 
-        <div style={{ display: "flex", gap: 6, background: "#e2e8f0", padding: 4, borderRadius: 10 }}>
+        <div style={{ display: "flex", gap: 8, background: "rgba(255,255,255,0.1)", padding: 6, borderRadius: 16, border: "1px solid rgba(255,255,255,0.18)", backdropFilter: "blur(10px)" }}>
           <button
             onClick={() => setActiveTab("analytics")}
             style={{
-              padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
-              background: activeTab === "analytics" ? "#1e40af" : "transparent",
-              color: activeTab === "analytics" ? "#fff" : "#475569",
+              padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 800, border: "none", cursor: "pointer", transition: "all 0.15s ease",
+              background: activeTab === "analytics" ? "#ffffff" : "transparent",
+              color: activeTab === "analytics" ? "#0f172a" : "#cbd5e1",
+              boxShadow: activeTab === "analytics" ? "0 4px 12px rgba(0,0,0,0.15)" : "none",
             }}
           >
             Analytics
@@ -229,9 +241,10 @@ export default function AdminPage() {
           <button
             onClick={() => setActiveTab("manage")}
             style={{
-              padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
-              background: activeTab === "manage" ? "#1e40af" : "transparent",
-              color: activeTab === "manage" ? "#fff" : "#475569",
+              padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 800, border: "none", cursor: "pointer", transition: "all 0.15s ease",
+              background: activeTab === "manage" ? "#ffffff" : "transparent",
+              color: activeTab === "manage" ? "#0f172a" : "#cbd5e1",
+              boxShadow: activeTab === "manage" ? "0 4px 12px rgba(0,0,0,0.15)" : "none",
             }}
           >
             Manage Issues ({complaints.length})
@@ -239,12 +252,13 @@ export default function AdminPage() {
           <button
             onClick={() => setActiveTab("users")}
             style={{
-              padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
-              background: activeTab === "users" ? "#1e40af" : "transparent",
-              color: activeTab === "users" ? "#fff" : "#475569",
+              padding: "10px 18px", borderRadius: 12, fontSize: 13, fontWeight: 800, border: "none", cursor: "pointer", transition: "all 0.15s ease",
+              background: activeTab === "users" ? "#ffffff" : "transparent",
+              color: activeTab === "users" ? "#0f172a" : "#cbd5e1",
+              boxShadow: activeTab === "users" ? "0 4px 12px rgba(0,0,0,0.15)" : "none",
             }}
           >
-            User Management ({allUsers.length})
+            User Administration ({allUsers.length})
           </button>
         </div>
       </div>

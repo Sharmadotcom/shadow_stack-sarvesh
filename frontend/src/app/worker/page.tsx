@@ -128,48 +128,59 @@ export default function WorkerPage() {
 
   return (
     <div>
-      {/* Header Banner */}
-      <div style={{
-        background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-        color: "#fff", borderRadius: 16, padding: "28px 32px", marginBottom: 24,
-        boxShadow: "0 4px 20px rgba(15, 23, 42, 0.15)",
+      {/* Hero Header */}
+      <div className="hero-gradient" style={{
+        padding: "32px 36px", marginBottom: 28,
+        display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20,
       }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div>
-            <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 4, display: "flex", alignItems: "center", gap: 10 }}>
-              Worker Maintenance Portal
-            </div>
-            <div style={{ color: "#94a3b8", fontSize: 14 }}>
-              Logged in as <strong style={{ color: "#f8fafc" }}>{user?.name}</strong> ({user?.department || "Field Staff"})
-            </div>
+        <div style={{ maxWidth: 540 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.15)", borderRadius: 100, padding: "5px 14px", fontSize: 12, fontWeight: 800, marginBottom: 12, border: "1px solid rgba(255,255,255,0.2)" }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#4ade80", display: "inline-block" }}></span>
+            MAINTENANCE TECHNICIAN PORTAL
           </div>
-          <div style={{ display: "flex", gap: 12 }}>
-            <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", textAlign: "center" }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#3b82f6" }}>{unassignedStack.length}</div>
-              <div style={{ fontSize: 11, color: "#cbd5e1" }}>Available Stack</div>
-            </div>
-            <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", textAlign: "center" }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#f59e0b" }}>{myAssignedTasks.length}</div>
-              <div style={{ fontSize: 11, color: "#cbd5e1" }}>My Active Tasks</div>
-            </div>
-            <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 12, padding: "10px 16px", textAlign: "center" }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#10b981" }}>{resolvedTasks.length}</div>
-              <div style={{ fontSize: 11, color: "#cbd5e1" }}>Completed</div>
-            </div>
+          <h1 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 800, letterSpacing: "-0.03em" }}>
+            Welcome, {user?.name || "Technician"}!
+          </h1>
+          <div style={{ fontSize: 14, color: "#cbd5e1", lineHeight: 1.5 }}>
+            Specialization: <strong style={{ color: "#ffffff", textTransform: "capitalize" }}>{user?.department || "General Maintenance"} Specialist</strong>
+          </div>
+          <p style={{ margin: "6px 0 0", color: "#94a3b8", fontSize: 13 }}>
+            Claim unassigned tickets from your trade stack or manage your active work orders.
+          </p>
+        </div>
+
+        {/* Stats Pill Widgets */}
+        <div style={{
+          background: "rgba(255,255,255,0.08)", borderRadius: 20, padding: "18px 24px",
+          backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.15)",
+          display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, textAlign: "center", minWidth: 280,
+        }}>
+          <div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: "#38bdf8" }}>{unassignedStack.length}</div>
+            <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>Stack</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: "#fbbf24" }}>{myAssignedTasks.length}</div>
+            <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>Active</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: "#4ade80" }}>{resolvedTasks.length}</div>
+            <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 700, textTransform: "uppercase" }}>Done</div>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+      {/* Modern Tabs */}
+      <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
         <button
           onClick={() => setActiveTab("stack")}
           style={{
-            padding: "10px 20px", borderRadius: 10, fontSize: 14, fontWeight: 700,
-            border: "1.5px solid", cursor: "pointer",
-            borderColor: activeTab === "stack" ? "#2563eb" : "#e2e8f0",
-            background: activeTab === "stack" ? "#2563eb" : "#fff",
-            color: activeTab === "stack" ? "#fff" : "#475569",
+            padding: "12px 22px", borderRadius: 14, fontSize: 14, fontWeight: 800,
+            border: "1.5px solid", cursor: "pointer", transition: "all 0.2s ease",
+            borderColor: activeTab === "stack" ? "#4f46e5" : "#e2e8f0",
+            background: activeTab === "stack" ? "linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)" : "#ffffff",
+            color: activeTab === "stack" ? "#ffffff" : "#475569",
+            boxShadow: activeTab === "stack" ? "0 4px 14px rgba(79, 70, 229, 0.3)" : "none",
           }}
         >
           Available Ticket Stack ({unassignedStack.length})
@@ -177,11 +188,12 @@ export default function WorkerPage() {
         <button
           onClick={() => setActiveTab("assigned")}
           style={{
-            padding: "10px 20px", borderRadius: 10, fontSize: 14, fontWeight: 700,
-            border: "1.5px solid", cursor: "pointer",
+            padding: "12px 22px", borderRadius: 14, fontSize: 14, fontWeight: 800,
+            border: "1.5px solid", cursor: "pointer", transition: "all 0.2s ease",
             borderColor: activeTab === "assigned" ? "#1e40af" : "#e2e8f0",
-            background: activeTab === "assigned" ? "#1e40af" : "#fff",
-            color: activeTab === "assigned" ? "#fff" : "#475569",
+            background: activeTab === "assigned" ? "linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%)" : "#ffffff",
+            color: activeTab === "assigned" ? "#ffffff" : "#475569",
+            boxShadow: activeTab === "assigned" ? "0 4px 14px rgba(30, 64, 175, 0.3)" : "none",
           }}
         >
           My Active Tasks ({myAssignedTasks.length})
@@ -189,11 +201,12 @@ export default function WorkerPage() {
         <button
           onClick={() => setActiveTab("resolved")}
           style={{
-            padding: "10px 20px", borderRadius: 10, fontSize: 14, fontWeight: 700,
-            border: "1.5px solid", cursor: "pointer",
-            borderColor: activeTab === "resolved" ? "#10b981" : "#e2e8f0",
-            background: activeTab === "resolved" ? "#10b981" : "#fff",
-            color: activeTab === "resolved" ? "#fff" : "#475569",
+            padding: "12px 22px", borderRadius: 14, fontSize: 14, fontWeight: 800,
+            border: "1.5px solid", cursor: "pointer", transition: "all 0.2s ease",
+            borderColor: activeTab === "resolved" ? "#16a34a" : "#e2e8f0",
+            background: activeTab === "resolved" ? "linear-gradient(135deg, #16a34a 0%, #15803d 100%)" : "#ffffff",
+            color: activeTab === "resolved" ? "#ffffff" : "#475569",
+            boxShadow: activeTab === "resolved" ? "0 4px 14px rgba(22, 163, 74, 0.3)" : "none",
           }}
         >
           Completed ({resolvedTasks.length})

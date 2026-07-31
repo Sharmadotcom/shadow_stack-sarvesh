@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { ShieldCheck, Wrench, GraduationCap, LogOut, ChevronDown, User as UserIcon } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -21,8 +22,8 @@ export function Navbar() {
   const getLinks = () => {
     if (!user) {
       return [
-        { href: "/", label: "Home" },
-        { href: "/login", label: "Sign In Portals" },
+        { href: "/", label: "Home Portal" },
+        { href: "/login", label: "Sign In" },
       ];
     }
 
@@ -34,7 +35,7 @@ export function Navbar() {
 
     if (user.role === "worker") {
       return [
-        { href: "/worker", label: "Maintenance Tasks" },
+        { href: "/worker", label: "Maintenance Tasks Stack" },
       ];
     }
 
@@ -49,39 +50,43 @@ export function Navbar() {
 
   return (
     <nav style={{
-      background: "linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)",
-      boxShadow: "0 4px 16px rgba(15, 23, 42, 0.12)",
+      background: "rgba(15, 23, 42, 0.94)",
+      backdropFilter: "blur(16px)",
+      borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+      boxShadow: "0 4px 25px rgba(0, 0, 0, 0.15)",
       position: "sticky", top: 0, zIndex: 100,
     }}>
       <div style={{
         display: "flex", alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 24px", maxWidth: 1040, margin: "0 auto", height: 64,
+        padding: "0 24px", maxWidth: 1100, margin: "0 auto", height: 68,
       }}>
         {/* Logo */}
         <Link href={getRoleHome()} style={{ textDecoration: "none" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{
-              width: 38, height: 38, borderRadius: 10,
-              background: "rgba(255, 255, 255, 0.2)",
-              backdropFilter: "blur(8px)",
+              width: 42, height: 42, borderRadius: 12,
+              background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 16, fontWeight: 800, color: "#ffffff", border: "1px solid rgba(255, 255, 255, 0.3)",
+              fontSize: 18, fontWeight: 800, color: "#ffffff",
+              boxShadow: "0 4px 14px rgba(79, 70, 229, 0.4)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
             }}>
               CG
             </div>
             <div>
-              <div style={{ color: "#ffffff", fontWeight: 800, fontSize: 18, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+              <div style={{ color: "#ffffff", fontWeight: 800, fontSize: 19, lineHeight: 1.1, letterSpacing: "-0.03em" }}>
                 CampusGrieve
               </div>
-              <div style={{ color: "#bfdbfe", fontSize: 11, fontWeight: 500, marginTop: 1 }}>
-                Grievance & Maintenance System
+              <div style={{ color: "#94a3b8", fontSize: 11, fontWeight: 600, marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
+                Smart Campus Grievance System
               </div>
             </div>
           </div>
         </Link>
 
-        {/* Desktop Links */}
+        {/* Navigation Links */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {user ? (
             links.map((link) => {
@@ -90,10 +95,11 @@ export function Navbar() {
                 <Link key={link.href} href={link.href} style={{ textDecoration: "none" }}>
                   <div style={{
                     padding: "8px 16px", borderRadius: 10, fontSize: 13, fontWeight: 700,
-                    color: isActive ? "#1e40af" : "#e0f0ff",
-                    background: isActive ? "#ffffff" : "rgba(255, 255, 255, 0.1)",
-                    boxShadow: isActive ? "0 2px 8px rgba(0,0,0,0.1)" : "none",
-                    transition: "all 0.15s ease",
+                    color: isActive ? "#ffffff" : "#cbd5e1",
+                    background: isActive ? "linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)" : "rgba(255, 255, 255, 0.05)",
+                    border: isActive ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid transparent",
+                    boxShadow: isActive ? "0 4px 12px rgba(79, 70, 229, 0.3)" : "none",
+                    transition: "all 0.2s ease",
                   }}>
                     {link.label}
                   </div>
@@ -102,49 +108,49 @@ export function Navbar() {
             })
           ) : null}
 
-          {/* User Profile / Single Clean Sign In button */}
+          {/* User Profile Pill */}
           {user ? (
             <div style={{ position: "relative", marginLeft: 8 }}>
               <div
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                 style={{
                   display: "flex", alignItems: "center", gap: 10,
-                  background: "rgba(255, 255, 255, 0.18)", borderRadius: 100,
+                  background: "rgba(255, 255, 255, 0.08)", borderRadius: 100,
                   padding: "6px 14px 6px 8px", cursor: "pointer",
-                  border: "1px solid rgba(255, 255, 255, 0.25)",
-                  transition: "background 0.15s",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  transition: "all 0.2s ease",
                 }}
               >
                 <div style={{
-                  width: 30, height: 30, borderRadius: "50%",
-                  background: user.role === "admin" ? "#ef4444" : user.role === "worker" ? "#f59e0b" : "#3b82f6",
+                  width: 32, height: 32, borderRadius: "50%",
+                  background: user.role === "admin" ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)" : user.role === "worker" ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)" : "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
                   color: "#ffffff",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontWeight: 800, fontSize: 12, flexShrink: 0,
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
                 }}>
                   {user.avatar || user.name.substring(0, 2).toUpperCase()}
                 </div>
-                <div>
-                  <div style={{ color: "#ffffff", fontSize: 12, fontWeight: 700, lineHeight: 1 }}>{user.name}</div>
-                  <div style={{ color: "#bfdbfe", fontSize: 10, textTransform: "uppercase", fontWeight: 800, marginTop: 2 }}>
-                    {user.role}
+                <div style={{ textAlign: "left" }}>
+                  <div style={{ color: "#ffffff", fontSize: 13, fontWeight: 700, lineHeight: 1.1 }}>{user.name}</div>
+                  <div style={{ color: user.role === "admin" ? "#fca5a5" : user.role === "worker" ? "#fde68a" : "#bfdbfe", fontSize: 10, textTransform: "uppercase", fontWeight: 800, marginTop: 2 }}>
+                    {user.role} {user.department ? `· ${user.department}` : ""}
                   </div>
                 </div>
-                <span style={{ color: "#bfdbfe", fontSize: 10, marginLeft: 4 }}>▼</span>
+                <ChevronDown size={14} style={{ color: "#94a3b8", marginLeft: 4 }} />
               </div>
 
               {/* Profile Dropdown Menu */}
               {userDropdownOpen && (
                 <div style={{
-                  position: "absolute", top: "115%", right: 0, width: 220,
-                  background: "#ffffff", borderRadius: 14, boxShadow: "0 12px 32px rgba(15, 23, 42, 0.18)",
+                  position: "absolute", top: "118%", right: 0, width: 230,
+                  background: "#ffffff", borderRadius: 16, boxShadow: "0 16px 40px rgba(15, 23, 42, 0.22)",
                   border: "1px solid #e2e8f0", zIndex: 100, overflow: "hidden", padding: 8,
                 }}>
-                  <div style={{ padding: "8px 10px", fontSize: 12, color: "#64748b" }}>
-                    Signed in as <br /><strong style={{ color: "#0f172a" }}>{user.email}</strong>
+                  <div style={{ padding: "10px 12px", background: "#f8fafc", borderRadius: 10, marginBottom: 6 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase" }}>Signed in as</div>
+                    <div style={{ color: "#0f172a", fontWeight: 800, fontSize: 13, wordBreak: "break-all", marginTop: 2 }}>{user.email}</div>
                   </div>
-                  <div style={{ borderTop: "1px solid #f1f5f9", margin: "6px 0" }} />
                   <button
                     onClick={() => {
                       setUserDropdownOpen(false);
@@ -153,11 +159,12 @@ export function Navbar() {
                     }}
                     style={{
                       width: "100%", padding: "10px 12px", textAlign: "left", background: "#fff5f5",
-                      border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700, color: "#dc2626", cursor: "pointer",
+                      border: "none", borderRadius: 10, fontSize: 13, fontWeight: 700, color: "#dc2626", cursor: "pointer",
                       display: "flex", alignItems: "center", gap: 8, transition: "background 0.15s",
                     }}
                   >
-                    Sign Out
+                    <LogOut size={14} />
+                    Sign Out Account
                   </button>
                 </div>
               )}
@@ -165,9 +172,9 @@ export function Navbar() {
           ) : (
             <Link href="/login" style={{ textDecoration: "none" }}>
               <button style={{
-                background: "#ffffff", color: "#1e40af", border: "none",
-                borderRadius: 10, padding: "9px 20px", fontWeight: 800,
-                fontSize: 13, cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                background: "linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)", color: "#ffffff", border: "none",
+                borderRadius: 12, padding: "10px 20px", fontWeight: 800,
+                fontSize: 13, cursor: "pointer", boxShadow: "0 4px 14px rgba(79, 70, 229, 0.3)",
                 transition: "transform 0.15s ease",
               }}>
                 Sign In
