@@ -1,4 +1,4 @@
-# CampusCare - Smart Grievance & Maintenance Tracker
+# **CampusCare - Smart Grievance & Maintenance Tracker**
 
 > **Team Name:** Shadow Stack
 
