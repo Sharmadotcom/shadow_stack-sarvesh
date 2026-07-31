@@ -227,284 +227,238 @@ export default function HomePage() {
     const current = portalConfig[activePortal];
 
     return (
-      <div style={{ maxWidth: 720, margin: "20px auto 60px" }}>
+      <div style={{ minHeight: "calc(100vh - 80px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
         {/* Load Official Google Identity Services SDK */}
         <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
 
-        {/* Title Header */}
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <h1 style={{ margin: 0, fontSize: 30, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>
-            CampusGrieve Portal Gateway
-          </h1>
-          <p style={{ color: "#64748b", fontSize: 15, marginTop: 6, margin: "6px 0 0" }}>
-            Select your assigned portal to sign in or create an account
-          </p>
-        </div>
-
-        {/* 3 Portal Selection Cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: 28 }}>
-          {(["student", "worker", "admin"] as UserRole[]).map((role) => {
-            const cfg = portalConfig[role];
-            const isSelected = activePortal === role;
-            return (
-              <div
-                key={role}
-                onClick={() => {
-                  setActivePortal(role);
-                  setIsRegister(false);
-                }}
-                className="card card-interactive"
-                style={{
-                  padding: "20px 14px", textAlign: "center", borderRadius: 16,
-                  border: isSelected ? `2.5px solid ${cfg.badgeColor}` : "1.5px solid #e2e8f0",
-                  background: isSelected ? cfg.badgeBg : "#ffffff",
-                  transform: isSelected ? "translateY(-2px)" : "none",
-                  transition: "all 0.2s ease",
-                }}
-              >
-                <div style={{ fontWeight: 800, fontSize: 14, color: isSelected ? cfg.badgeColor : "#1e293b", textTransform: "capitalize" }}>
-                  {role} Portal
-                </div>
-                <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>
-                  {role === "student" ? "Students & Residents" : role === "worker" ? "Technicians & Staff" : "System Administrators"}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Form Card */}
-        <div className="card" style={{ padding: "32px 28px", background: "#ffffff", borderRadius: 20 }}>
-          {/* Banner */}
+        <div style={{
+          display: "flex", flexWrap: "wrap", width: "100%", maxWidth: 1080,
+          background: "#ffffff", borderRadius: 24, boxShadow: "0 25px 50px -12px rgba(15,23,42,0.15)", overflow: "hidden",
+        }}>
+          {/* Left Panel: Gateway Selector */}
           <div style={{
-            display: "flex", alignItems: "center", gap: 12,
-            padding: "12px 16px", borderRadius: 12, background: current.badgeBg,
-            border: `1px solid ${current.badgeColor}30`, marginBottom: 24,
+            flex: "1 1 400px", background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+            padding: "48px 40px", color: "#ffffff", position: "relative",
           }}>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: 15, color: current.badgeColor }}>
-                {current.title}
+            {/* Background Decoration */}
+            <div style={{ position: "absolute", top: -50, right: -50, width: 200, height: 200, background: "rgba(255,255,255,0.03)", borderRadius: "50%", filter: "blur(40px)" }} />
+            
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.1)", padding: "6px 14px", borderRadius: 100, fontSize: 12, fontWeight: 800, marginBottom: 24, border: "1px solid rgba(255,255,255,0.1)" }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#38bdf8" }}></span>
+                SYSTEM GATEWAY
               </div>
-              <div style={{ fontSize: 12, color: "#475569" }}>
-                {current.subtitle}
-              </div>
-            </div>
-          </div>
+              <h1 style={{ margin: "0 0 12px", fontSize: 32, fontWeight: 800, letterSpacing: "-0.02em" }}>
+                CampusGrieve
+              </h1>
+              <p style={{ color: "#94a3b8", fontSize: 15, lineHeight: 1.6, marginBottom: 40 }}>
+                A centralized, role-based platform for campus maintenance, analytics, and issue resolution.
+              </p>
 
-          {/* Google OAuth Button — our styled button + invisible Google renderButton overlay */}
-          <div style={{ position: "relative", width: "100%", marginBottom: activePortal === "admin" ? 0 : 20 }}>
-            {/* Visual styled button */}
-            <button
-              type="button"
-              disabled={googleLoading || formLoading}
-              style={{
-                width: "100%", padding: "14px", borderRadius: 12, border: "1.5px solid #cbd5e1",
-                background: "#ffffff", color: "#1e293b", fontWeight: 800, fontSize: 15,
-                cursor: googleLoading ? "not-allowed" : "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                transition: "background 0.15s ease", boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                opacity: googleLoading ? 0.7 : 1,
-              }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-              </svg>
-              {googleLoading ? "Authenticating with Google..." : `Sign in with Authorized Google OAuth (${activePortal.toUpperCase()})`}
-            </button>
-            {/* Invisible Google renderButton overlay — handles actual OAuth popup click */}
-            <div
-              ref={googleButtonRef}
-              style={{
-                position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
-                overflow: "hidden", opacity: 0.001,
-                pointerEvents: googleLoading || formLoading ? "none" : "all",
-                cursor: "pointer",
-                display: "flex", justifyContent: "center", alignItems: "center",
-              }}
-            />
-          </div>
-
-          {/* Admin Policy Notice */}
-          {activePortal === "admin" ? (
-            <div style={{
-              background: "#fff5f5", border: "1.5px solid #fca5a5", borderRadius: 12,
-              padding: "16px", marginTop: 20, textAlign: "center", color: "#dc2626", fontSize: 13, fontWeight: 700,
-            }}>
-              Security Policy Enforced: Password authentication is disabled for Admin Control Center. Only authorized Google OAuth accounts can sign in.
-            </div>
-          ) : (
-            <>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "20px 0" }}>
-                <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
-                <span style={{ fontSize: 11, color: "#94a3b8", fontWeight: 700 }}>OR WITH CAMPUS CREDENTIALS</span>
-                <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
-              </div>
-
-              <form onSubmit={handleAuthSubmit}>
-                {isRegister && (
-                  <div style={{ marginBottom: 16 }}>
-                    <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Arjun Sharma"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      style={{
-                        width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
-                        borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box",
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {(["student", "worker", "admin"] as UserRole[]).map((role) => {
+                  const cfg = portalConfig[role];
+                  const isSelected = activePortal === role;
+                  return (
+                    <div
+                      key={role}
+                      onClick={() => {
+                        setActivePortal(role);
+                        setIsRegister(false);
                       }}
-                    />
-                  </div>
-                )}
-
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-                    Campus Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    placeholder={`e.g. ${current.placeholderEmail}`}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    style={{
-                      width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
-                      borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box",
-                    }}
-                  />
-                </div>
-
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-                    Password *
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    style={{
-                      width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
-                      borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box",
-                    }}
-                  />
-                </div>
-
-                {isRegister && activePortal === "student" && (
-                  <>
-                    <div style={{ marginBottom: 16 }}>
-                      <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-                        Roll Number
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. 22CS045"
-                        value={rollNo}
-                        onChange={(e) => setRollNo(e.target.value)}
-                        style={{
-                          width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
-                          borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box",
-                        }}
-                      />
-                    </div>
-
-                    <div style={{ marginBottom: 16 }}>
-                      <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-                        Hostel & Room No.
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Himalaya Block - Room 304"
-                        value={hostel}
-                        onChange={(e) => setHostel(e.target.value)}
-                        style={{
-                          width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
-                          borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box",
-                        }}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {isRegister && activePortal === "worker" && (
-                  <div style={{ marginBottom: 16 }}>
-                    <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-                      Worker Specialty / Category *
-                    </label>
-                    <select
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
                       style={{
-                        width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
-                        borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box",
-                        backgroundColor: "#ffffff", cursor: "pointer",
+                        padding: "16px 20px", borderRadius: 16, cursor: "pointer",
+                        background: isSelected ? "rgba(255,255,255,0.1)" : "transparent",
+                        border: isSelected ? "1px solid rgba(255,255,255,0.2)" : "1px solid transparent",
+                        transition: "all 0.2s ease", display: "flex", alignItems: "center", gap: 16,
                       }}
                     >
-                      <option value="electrician">electrician</option>
-                      <option value="plumber">plumber</option>
-                      <option value="Technician">Technician</option>
-                      <option value="Driver">Driver</option>
-                      <option value="Security">Security</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                )}
+                      <div style={{
+                        width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
+                        background: isSelected ? cfg.badgeColor : "rgba(255,255,255,0.05)",
+                        color: "#fff", fontWeight: 800, fontSize: 18,
+                      }}>
+                        {role === "student" ? "S" : role === "worker" ? "W" : "A"}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: 15, color: isSelected ? "#fff" : "#cbd5e1", textTransform: "capitalize" }}>
+                          {role} Portal
+                        </div>
+                        <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
+                          {role === "student" ? "For Campus Residents" : role === "worker" ? "For Maintenance Staff" : "For System Admins"}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
 
-                {isRegister && activePortal === "worker" && department === "Other" && (
+          {/* Right Panel: Authentication Form */}
+          <div style={{ flex: "1.5 1 500px", padding: "48px 56px", background: "#ffffff", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div style={{ marginBottom: 32 }}>
+              <h2 style={{ margin: "0 0 8px", fontSize: 24, fontWeight: 800, color: current.badgeColor }}>
+                {current.title}
+              </h2>
+              <p style={{ margin: 0, color: "#64748b", fontSize: 14 }}>
+                {current.subtitle}
+              </p>
+            </div>
+
+            {/* Google OAuth Button */}
+            <div style={{ position: "relative", width: "100%", marginBottom: activePortal === "admin" ? 0 : 28 }}>
+              <button
+                type="button"
+                disabled={googleLoading || formLoading}
+                style={{
+                  width: "100%", padding: "14px", borderRadius: 12, border: "1.5px solid #e2e8f0",
+                  background: "#ffffff", color: "#1e293b", fontWeight: 800, fontSize: 15,
+                  cursor: googleLoading ? "not-allowed" : "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+                  transition: "all 0.2s ease", boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
+                  opacity: googleLoading ? 0.7 : 1,
+                }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                </svg>
+                {googleLoading ? "Authenticating..." : `Continue with Google`}
+              </button>
+              <div
+                ref={googleButtonRef}
+                style={{
+                  position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+                  overflow: "hidden", opacity: 0.001,
+                  pointerEvents: googleLoading || formLoading ? "none" : "all", cursor: "pointer",
+                }}
+              />
+            </div>
+
+            {/* Admin Policy Notice */}
+            {activePortal === "admin" ? (
+              <div style={{
+                background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 12,
+                padding: "20px", marginTop: 24, color: "#ef4444", fontSize: 14, fontWeight: 600, display: "flex", gap: 12,
+              }}>
+                <div style={{ fontSize: 20 }}>🛡️</div>
+                <div>
+                  <strong>Strict Authentication Enforced</strong>
+                  <div style={{ marginTop: 4, color: "#991b1b", fontSize: 13, fontWeight: 500 }}>Password sign-in is disabled for the Admin Control Center. Only authorized Google Accounts may proceed.</div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "24px 0" }}>
+                  <div style={{ flex: 1, height: 1, background: "#f1f5f9" }} />
+                  <span style={{ fontSize: 11, color: "#94a3b8", fontWeight: 800, letterSpacing: "0.05em" }}>OR USE CAMPUS CREDENTIALS</span>
+                  <div style={{ flex: 1, height: 1, background: "#f1f5f9" }} />
+                </div>
+
+                <form onSubmit={handleAuthSubmit}>
+                  {isRegister && (
+                    <div style={{ marginBottom: 16 }}>
+                      <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 6 }}>Full Name *</label>
+                      <input
+                        type="text" required placeholder="e.g. Arjun Sharma"
+                        value={name} onChange={(e) => setName(e.target.value)}
+                        style={{ width: "100%", padding: "12px 16px", border: "1.5px solid #e2e8f0", borderRadius: 12, fontSize: 14, outline: "none", boxSizing: "border-box", transition: "border 0.2s" }}
+                      />
+                    </div>
+                  )}
+
                   <div style={{ marginBottom: 16 }}>
-                    <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
-                      Specify Other Specialty
-                    </label>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 6 }}>Campus Email Address *</label>
                     <input
-                      type="text"
-                      placeholder="e.g. Carpenter, Painter, HVAC Specialist"
-                      value={customDepartment}
-                      onChange={(e) => setCustomDepartment(e.target.value)}
-                      style={{
-                        width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
-                        borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box",
-                      }}
+                      type="email" required placeholder={current.placeholderEmail}
+                      value={email} onChange={(e) => setEmail(e.target.value)}
+                      style={{ width: "100%", padding: "12px 16px", border: "1.5px solid #e2e8f0", borderRadius: 12, fontSize: 14, outline: "none", boxSizing: "border-box", transition: "border 0.2s" }}
                     />
                   </div>
-                )}
 
-                <button
-                  type="submit"
-                  disabled={formLoading}
-                  style={{
-                    width: "100%", padding: "14px", background: current.badgeColor, color: "#ffffff",
-                    border: "none", borderRadius: 12, fontWeight: 800, fontSize: 15,
-                    cursor: "pointer", boxShadow: `0 4px 14px ${current.badgeColor}40`,
-                    transition: "all 0.15s ease",
-                  }}
-                >
-                  {formLoading ? "Authenticating..." : isRegister ? `Create ${activePortal.toUpperCase()} Account` : `Sign In to ${current.title}`}
-                </button>
-              </form>
+                  <div style={{ marginBottom: 24 }}>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 6 }}>Password *</label>
+                    <input
+                      type="password" required placeholder="••••••••"
+                      value={password} onChange={(e) => setPassword(e.target.value)}
+                      style={{ width: "100%", padding: "12px 16px", border: "1.5px solid #e2e8f0", borderRadius: 12, fontSize: 14, outline: "none", boxSizing: "border-box", transition: "border 0.2s" }}
+                    />
+                  </div>
 
-              <div style={{ textAlign: "center", marginTop: 20 }}>
-                <button
-                  type="button"
-                  onClick={() => setIsRegister(!isRegister)}
-                  style={{
-                    background: "none", border: "none", color: current.badgeColor,
-                    fontSize: 13, fontWeight: 700, cursor: "pointer",
-                  }}
-                >
-                  {isRegister
-                    ? "Already have an account? Sign in here"
-                    : `Need a new account? Register as ${activePortal}`}
-                </button>
-              </div>
-            </>
-          )}
+                  {/* Extra Fields for Registration */}
+                  {isRegister && activePortal === "student" && (
+                    <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 6 }}>Roll Number</label>
+                        <input
+                          type="text" placeholder="e.g. 22CS045" value={rollNo} onChange={(e) => setRollNo(e.target.value)}
+                          style={{ width: "100%", padding: "12px 16px", border: "1.5px solid #e2e8f0", borderRadius: 12, fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                        />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 6 }}>Hostel / Room No.</label>
+                        <input
+                          type="text" placeholder="e.g. Himalaya - 304" value={hostel} onChange={(e) => setHostel(e.target.value)}
+                          style={{ width: "100%", padding: "12px 16px", border: "1.5px solid #e2e8f0", borderRadius: 12, fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {isRegister && activePortal === "worker" && (
+                    <div style={{ marginBottom: 24 }}>
+                      <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 6 }}>Worker Specialty / Category *</label>
+                      <select
+                        value={department} onChange={(e) => setDepartment(e.target.value)}
+                        style={{ width: "100%", padding: "12px 16px", border: "1.5px solid #e2e8f0", borderRadius: 12, fontSize: 14, outline: "none", boxSizing: "border-box", backgroundColor: "#fff", cursor: "pointer" }}
+                      >
+                        <option value="electrician">Electrician</option>
+                        <option value="plumber">Plumber</option>
+                        <option value="Technician">Technician</option>
+                        <option value="Driver">Driver</option>
+                        <option value="Security">Security</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      {department === "Other" && (
+                        <input
+                          type="text" placeholder="Specify Specialty (e.g. Carpenter)" value={customDepartment} onChange={(e) => setCustomDepartment(e.target.value)}
+                          style={{ width: "100%", padding: "12px 16px", border: "1.5px solid #e2e8f0", borderRadius: 12, fontSize: 14, outline: "none", boxSizing: "border-box", marginTop: 12 }}
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit" disabled={formLoading}
+                    style={{
+                      width: "100%", padding: "16px", background: current.badgeColor, color: "#ffffff",
+                      border: "none", borderRadius: 12, fontWeight: 800, fontSize: 15,
+                      cursor: "pointer", boxShadow: `0 8px 20px ${current.badgeColor}30`,
+                      transition: "all 0.2s ease", transform: "translateY(0)",
+                    }}
+                  >
+                    {formLoading ? "Authenticating..." : isRegister ? `Create Account` : `Sign In`}
+                  </button>
+                </form>
+
+                <div style={{ textAlign: "center", marginTop: 24 }}>
+                  <button
+                    type="button" onClick={() => setIsRegister(!isRegister)}
+                    style={{
+                      background: "none", border: "none", color: "#64748b",
+                      fontSize: 13, fontWeight: 700, cursor: "pointer",
+                      textDecoration: "underline", textUnderlineOffset: 4,
+                    }}
+                  >
+                    {isRegister ? "Already have an account? Sign in here" : `Need a new account? Register as ${activePortal}`}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     );
