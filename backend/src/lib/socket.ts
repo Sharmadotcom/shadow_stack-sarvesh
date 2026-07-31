@@ -14,11 +14,11 @@ export function initSocket(server: HTTPServer): Server {
   io.on("connection", (socket: Socket) => {
     console.log(`[Socket.io] Client connected: ${socket.id}`);
 
-    // Join general rooms
+    // Join general room
     socket.join("global");
 
     // Room subscription handler
-    socket.on("join_room", (data: { room: string; role?: string; userId?: string; category?: string }) => {
+    socket.on("join_room", (data: { room?: string; role?: string; userId?: string; category?: string }) => {
       if (data.room) {
         socket.join(data.room);
         console.log(`[Socket.io] Client ${socket.id} joined room: ${data.room}`);
@@ -56,13 +56,6 @@ export function getIO(): Server {
   return io;
 }
 
-export function emitRealtimeEvent(event: string, payload: any, rooms: string[] = ["global"]) {
-  if (!io) return;
-  rooms.forEach((room) => {
-    io?.to(room).emit(event, payload);
-  });
-}
-
 export function notifyComplaintCreated(complaint: any) {
   if (!io) return;
   const payload = {
@@ -71,9 +64,9 @@ export function notifyComplaintCreated(complaint: any) {
     timestamp: new Date().toISOString(),
   };
 
-  // Broadcast to global, admin, student, and category rooms
-  io.to("global").to("role:admin").to(`user:${complaint.submittedById}`).to(`category:${complaint.category?.toLowerCase()}`).emit("complaint_created", payload);
-  io.to("global").to("role:admin").to(`user:${complaint.submittedById}`).to(`category:${complaint.category?.toLowerCase()}`).emit("realtime_update", payload);
+  // Broadcast globally to all connected clients & specific rooms
+  io.emit("complaint_created", payload);
+  io.emit("realtime_update", payload);
 }
 
 export function notifyComplaintUpdated(complaint: any, actionType: string = "UPDATED", message?: string) {
@@ -86,16 +79,7 @@ export function notifyComplaintUpdated(complaint: any, actionType: string = "UPD
     timestamp: new Date().toISOString(),
   };
 
-  const rooms = ["global", "role:admin", `user:${complaint.submittedById}`, `complaint:${complaint.id}`];
-  if (complaint.assignedToId) {
-    rooms.push(`user:${complaint.assignedToId}`);
-  }
-  if (complaint.category) {
-    rooms.push(`category:${complaint.category.toLowerCase()}`);
-  }
-
-  rooms.forEach((room) => {
-    io?.to(room).emit("complaint_updated", payload);
-    io?.to(room).emit("realtime_update", payload);
-  });
+  // Broadcast globally to all connected clients & specific rooms
+  io.emit("complaint_updated", payload);
+  io.emit("realtime_update", payload);
 }

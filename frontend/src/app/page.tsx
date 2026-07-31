@@ -57,8 +57,8 @@ export default function HomePage() {
     }
   }, [user, router]);
 
-  const fetchStudentData = async () => {
-    setDashboardLoading(true);
+  const fetchStudentData = async (showLoading = true) => {
+    if (showLoading) setDashboardLoading(true);
     try {
       const data = await api.getComplaints();
       setComplaints(data);
@@ -72,7 +72,7 @@ export default function HomePage() {
   // Socket.io Realtime Listener
   useSocket((eventData: any) => {
     if (user && user.role === "student") {
-      fetchStudentData();
+      fetchStudentData(false);
       if (eventData.message || eventData.complaint?.title) {
         toast.info(`⚡ Realtime Notification: ${eventData.message || eventData.complaint?.title}`);
       }

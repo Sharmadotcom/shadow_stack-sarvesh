@@ -44,7 +44,7 @@ export default function ComplaintDetailPage() {
   // Realtime Socket Listener
   useSocket((eventData) => {
     if (eventData.complaint?.id === id) {
-      fetchDetail();
+      fetchDetail(false);
       if (eventData.message) {
         toast.info(`⚡ Live Update: ${eventData.message}`);
       }
@@ -52,11 +52,11 @@ export default function ComplaintDetailPage() {
   });
 
   useEffect(() => {
-    fetchDetail();
+    fetchDetail(true);
   }, [id]);
 
-  const fetchDetail = async () => {
-    setLoading(true);
+  const fetchDetail = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const data = await api.getComplaintById(id);
       setComplaint(data);

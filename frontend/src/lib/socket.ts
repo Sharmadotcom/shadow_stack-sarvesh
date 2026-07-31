@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from "sonner";
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000";
 
@@ -14,6 +13,8 @@ export function getSocket(): Socket {
     globalSocket = io(SOCKET_URL, {
       transports: ["websocket", "polling"],
       autoConnect: true,
+      reconnection: true,
+      reconnectionDelay: 1000,
     });
   }
   return globalSocket;
@@ -22,12 +23,16 @@ export function getSocket(): Socket {
 export function useSocket(onRealtimeEvent?: (eventData: any) => void) {
   const { user } = useAuth();
   const [connected, setConnected] = useState(false);
+  const handlerRef = useRef(onRealtimeEvent);
+
+  useEffect(() => {
+    handlerRef.current = onRealtimeEvent;
+  }, [onRealtimeEvent]);
 
   useEffect(() => {
     const socket = getSocket();
 
-    function onConnect() {
-      setConnected(true);
+    const joinUserRooms = () => {
       if (user) {
         socket.emit("join_room", {
           role: user.role,
@@ -35,6 +40,11 @@ export function useSocket(onRealtimeEvent?: (eventData: any) => void) {
           category: user.department,
         });
       }
+    };
+
+    function onConnect() {
+      setConnected(true);
+      joinUserRooms();
     }
 
     function onDisconnect() {
@@ -45,14 +55,14 @@ export function useSocket(onRealtimeEvent?: (eventData: any) => void) {
     socket.on("disconnect", onDisconnect);
 
     if (socket.connected) {
-      onConnect();
+      setConnected(true);
+      joinUserRooms();
     }
 
-    // Generic real-time event listener
     const handleUpdate = (data: any) => {
-      console.log("[Socket.io Realtime Event]", data);
-      if (onRealtimeEvent) {
-        onRealtimeEvent(data);
+      console.log("⚡ [Socket.io Realtime Event Received]", data);
+      if (handlerRef.current) {
+        handlerRef.current(data);
       }
     };
 
@@ -67,7 +77,7 @@ export function useSocket(onRealtimeEvent?: (eventData: any) => void) {
       socket.off("complaint_updated", handleUpdate);
       socket.off("realtime_update", handleUpdate);
     };
-  }, [user, onRealtimeEvent]);
+  }, [user]);
 
   return { socket: getSocket(), connected };
 }

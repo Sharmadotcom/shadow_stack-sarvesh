@@ -21,7 +21,7 @@ export default function WorkerPage() {
   // Socket.io Real-time Trade Stack Listener
   useSocket((eventData) => {
     if (user && (user.role === "worker" || user.role === "admin")) {
-      fetchWorkerTasks();
+      fetchWorkerTasks(false);
       if (eventData.event === "COMPLAINT_CREATED") {
         toast.info(`⚡ New Ticket in Trade Stack: ${eventData.complaint?.title || "New Issue Reported"}`);
       } else if (eventData.message) {
@@ -52,12 +52,12 @@ export default function WorkerPage() {
     }
 
     if (user && (user.role === "worker" || user.role === "admin")) {
-      fetchWorkerTasks();
+      fetchWorkerTasks(true);
     }
   }, [user, authLoading, router]);
 
-  const fetchWorkerTasks = async () => {
-    setLoading(true);
+  const fetchWorkerTasks = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const data = await api.getComplaints();
       setComplaints(data);

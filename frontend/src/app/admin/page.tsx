@@ -76,8 +76,8 @@ export default function AdminPage() {
     }
   }, [user, authLoading, router]);
 
-  const loadAdminData = async () => {
-    setLoading(true);
+  const loadAdminData = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const [compRes, workerRes, analyticsRes, usersRes] = await Promise.all([
         api.getComplaints(),
@@ -99,7 +99,7 @@ export default function AdminPage() {
   // Socket.io Real-Time Listener for Admin
   useSocket((eventData: any) => {
     if (user && user.role === "admin") {
-      loadAdminData();
+      loadAdminData(false);
       if (eventData.message || eventData.complaint?.title) {
         toast.info(`⚡ Live Admin Notification: ${eventData.message || eventData.complaint?.title}`);
       }
