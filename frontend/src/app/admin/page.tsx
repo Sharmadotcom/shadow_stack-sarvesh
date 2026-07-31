@@ -264,16 +264,21 @@ export default function AdminPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="stats-grid" style={{ marginBottom: 24 }}>
+      {/* KPI Cards */}
+      <div className="stats-grid" style={{ marginBottom: 32, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
         {[
-          { label: "Total Complaints", value: analytics?.stats?.total ?? 0, color: "#6366f1" },
-          { label: "SLA Compliance Rate", value: `${analytics?.stats?.slaComplianceRate ?? 100}%`, color: "#10b981" },
-          { label: "Escalated Issues", value: analytics?.stats?.escalated ?? 0, color: "#ef4444" },
-          { label: "Registered Users", value: allUsers.length, color: "#06b6d4" },
+          { label: "Total Complaints", value: analytics?.stats?.total ?? 0, color: "#6366f1", bg: "linear-gradient(135deg, #eef2ff 0%, #ffffff 100%)" },
+          { label: "SLA Compliance Rate", value: `${analytics?.stats?.slaComplianceRate ?? 100}%`, color: "#10b981", bg: "linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%)" },
+          { label: "Escalated Issues", value: analytics?.stats?.escalated ?? 0, color: "#ef4444", bg: "linear-gradient(135deg, #fef2f2 0%, #ffffff 100%)" },
+          { label: "Registered Users", value: allUsers.length, color: "#06b6d4", bg: "linear-gradient(135deg, #ecfeff 0%, #ffffff 100%)" },
         ].map((s) => (
-          <div key={s.label} className="card" style={{ padding: "18px 16px", textAlign: "center", borderTop: `4px solid ${s.color}` }}>
-            <div style={{ fontSize: 26, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>{s.label}</div>
+          <div key={s.label} className="glass-panel" style={{
+            padding: "24px 20px", textAlign: "center", borderRadius: 20,
+            background: s.bg, border: "1px solid rgba(0,0,0,0.04)",
+            boxShadow: "0 10px 25px -5px rgba(0,0,0,0.02)", transition: "transform 0.2s ease"
+          }}>
+            <div style={{ fontSize: 36, fontWeight: 900, color: s.color, lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 13, color: "#64748b", marginTop: 8, fontWeight: 700, letterSpacing: "0.02em" }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -284,8 +289,8 @@ export default function AdminPage() {
           {/* Charts Row */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20 }}>
             {/* Category Pie Chart */}
-            <div className="card" style={{ padding: "20px" }}>
-              <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "#1e293b" }}>
+            <div className="glass-panel" style={{ padding: "24px", borderRadius: 24, background: "#ffffff", boxShadow: "0 12px 40px -12px rgba(0,0,0,0.08)" }}>
+              <h3 style={{ margin: "0 0 20px", fontSize: 18, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
                 Issue Categories Distribution
               </h3>
               <div style={{ width: "100%", height: 260 }}>
@@ -295,34 +300,35 @@ export default function AdminPage() {
                       data={categoryChartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={90}
-                      paddingAngle={4}
+                      innerRadius={65}
+                      outerRadius={95}
+                      paddingAngle={6}
                       dataKey="value"
+                      stroke="none"
                     >
                       {categoryChartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip />
-                    <Legend />
+                    <Tooltip cursor={{ fill: 'rgba(0,0,0,0.05)' }} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }} />
+                    <Legend iconType="circle" wrapperStyle={{ fontSize: 12, fontWeight: 600, color: "#475569" }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* Priority Bar Chart */}
-            <div className="card" style={{ padding: "20px" }}>
-              <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "#1e293b" }}>
+            <div className="glass-panel" style={{ padding: "24px", borderRadius: 24, background: "#ffffff", boxShadow: "0 12px 40px -12px rgba(0,0,0,0.08)" }}>
+              <h3 style={{ margin: "0 0 20px", fontSize: 18, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
                 Priority Levels Breakdown
               </h3>
               <div style={{ width: "100%", height: 260 }}>
                 <ResponsiveContainer>
                   <BarChart data={priorityChartData}>
-                    <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
-                    <YAxis stroke="#64748b" fontSize={12} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#3b82f6" radius={[6, 6, 0, 0]}>
+                    <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} fontWeight={600} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#94a3b8" fontSize={11} fontWeight={600} tickLine={false} axisLine={false} />
+                    <Tooltip cursor={{ fill: 'rgba(0,0,0,0.03)' }} contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }} />
+                    <Bar dataKey="count" fill="#3b82f6" radius={[8, 8, 8, 8]} barSize={40}>
                       {priorityChartData.map((entry, index) => (
                         <Cell
                           key={`bar-${index}`}
@@ -339,32 +345,34 @@ export default function AdminPage() {
           </div>
 
           {/* Maintenance Staff Performance Leaderboard */}
-          <div className="card" style={{ padding: "20px" }}>
-            <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "#1e293b" }}>
-              Maintenance Staff Performance Leaderboard
+          <div className="glass-panel" style={{ padding: "32px", borderRadius: 24, background: "#ffffff", boxShadow: "0 12px 40px -12px rgba(0,0,0,0.08)" }}>
+            <h3 style={{ margin: "0 0 24px", fontSize: 20, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
+              Staff Performance Leaderboard
             </h3>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <div style={{ overflowX: "auto", borderRadius: 16, border: "1px solid #f1f5f9" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
                 <thead>
-                  <tr style={{ background: "#f8fafc", textAlign: "left", color: "#64748b", borderBottom: "1.5px solid #e2e8f0" }}>
-                    <th style={{ padding: "10px 14px" }}>Technician</th>
-                    <th style={{ padding: "10px 14px" }}>Department</th>
-                    <th style={{ padding: "10px 14px" }}>Assigned Jobs</th>
-                    <th style={{ padding: "10px 14px" }}>Resolved</th>
-                    <th style={{ padding: "10px 14px" }}>Service Rating</th>
+                  <tr style={{ background: "#f8fafc", textAlign: "left", color: "#64748b", borderBottom: "2px solid #e2e8f0" }}>
+                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Technician</th>
+                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Department</th>
+                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Assigned Jobs</th>
+                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Resolved</th>
+                    <th style={{ padding: "14px 20px", fontWeight: 800, letterSpacing: "0.02em" }}>Service Rating</th>
                   </tr>
                 </thead>
                 <tbody>
                   {analytics?.workerStats?.map((w: any, idx: number) => (
-                    <tr key={w.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px 14px", fontWeight: 700, color: "#0f172a" }}>
-                        #{idx + 1} {w.name}
+                    <tr key={w.id} style={{ borderBottom: "1px solid #f1f5f9", background: idx % 2 === 0 ? "#ffffff" : "#fdfdfd", transition: "background 0.2s ease" }}
+                      onMouseOver={(e) => e.currentTarget.style.background = "#f1f5f9"}
+                      onMouseOut={(e) => e.currentTarget.style.background = idx % 2 === 0 ? "#ffffff" : "#fdfdfd"}>
+                      <td style={{ padding: "16px 20px", fontWeight: 800, color: "#0f172a" }}>
+                        <span style={{ color: "#94a3b8", marginRight: 8 }}>#{idx + 1}</span>{w.name}
                       </td>
-                      <td style={{ padding: "12px 14px", color: "#475569" }}>{w.department}</td>
-                      <td style={{ padding: "12px 14px", fontWeight: 600 }}>{w.assignedCount}</td>
-                      <td style={{ padding: "12px 14px", fontWeight: 700, color: "#10b981" }}>{w.resolvedCount}</td>
-                      <td style={{ padding: "12px 14px", fontWeight: 700, color: "#f59e0b" }}>
-                        {w.avgRating} / 5.0
+                      <td style={{ padding: "16px 20px", color: "#64748b", fontWeight: 500, textTransform: "capitalize" }}>{w.department}</td>
+                      <td style={{ padding: "16px 20px", fontWeight: 700, color: "#475569" }}>{w.assignedCount}</td>
+                      <td style={{ padding: "16px 20px", fontWeight: 800, color: "#10b981" }}>{w.resolvedCount}</td>
+                      <td style={{ padding: "16px 20px", fontWeight: 800, color: "#f59e0b" }}>
+                        ★ {w.avgRating} / 5.0
                       </td>
                     </tr>
                   ))}
@@ -377,69 +385,76 @@ export default function AdminPage() {
 
       {/* TAB 2: MANAGE COMPLAINTS */}
       {activeTab === "manage" && (
-        <div className="card" style={{ overflow: "hidden" }}>
-          <div style={{ padding: "16px 20px", borderBottom: "1px solid #f1f5f9", fontWeight: 700, fontSize: 15, background: "#f8fafc" }}>
-            All Campus Complaints ({complaints.length})
+        <div className="glass-panel" style={{ borderRadius: 24, background: "#ffffff", boxShadow: "0 12px 40px -12px rgba(0,0,0,0.08)", overflow: "hidden" }}>
+          <div style={{ padding: "20px 28px", borderBottom: "1px solid #e2e8f0", background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ fontWeight: 800, fontSize: 18, color: "#0f172a" }}>
+              All Campus Complaints <span style={{ color: "#64748b", fontWeight: 600, fontSize: 14 }}>({complaints.length})</span>
+            </div>
           </div>
 
           {complaints.map((c, i) => (
             <div key={c.id} style={{ borderBottom: i < complaints.length - 1 ? "1px solid #f1f5f9" : "none" }}>
-              <div className="admin-row" style={{ padding: "14px 20px" }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: "#0f172a", marginBottom: 4, display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: priorityColor[c.priority], flexShrink: 0 }} />
+              <div style={{ padding: "20px 28px", display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center", justifyContent: "space-between", background: expandedId === c.id ? "#f8fafc" : "#ffffff", transition: "background 0.2s ease" }}
+                onMouseOver={(e) => { if (expandedId !== c.id) e.currentTarget.style.background = "#fdfdfd" }}
+                onMouseOut={(e) => { if (expandedId !== c.id) e.currentTarget.style.background = "#ffffff" }}
+              >
+                <div style={{ flex: 1, minWidth: 280 }}>
+                  <div style={{ fontWeight: 800, fontSize: 16, color: "#0f172a", marginBottom: 6, display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: priorityColor[c.priority], flexShrink: 0, boxShadow: `0 0 8px ${priorityColor[c.priority]}80` }} />
                     <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.title}</span>
                   </div>
-                  <div style={{ fontSize: 12, color: "#64748b" }}>
-                    {c.id} · {c.category} · {getTimeAgo(c.createdAt)}
+                  <div style={{ fontSize: 13, color: "#64748b", fontWeight: 500 }}>
+                    #{c.id.slice(0, 8)} · <strong style={{ textTransform: "capitalize", color: "#475569" }}>{c.category}</strong> · {getTimeAgo(c.createdAt)}
                     {c.assignedTo ? (
-                      <span style={{ color: "#2563eb", marginLeft: 8 }}>{c.assignedTo.name}</span>
+                      <span style={{ color: "#2563eb", marginLeft: 12, fontWeight: 700 }}>👨‍🔧 {c.assignedTo.name}</span>
                     ) : (
-                      <span style={{ color: "#d97706", marginLeft: 8, fontWeight: 700 }}>Unassigned</span>
+                      <span style={{ color: "#d97706", marginLeft: 12, fontWeight: 800, background: "#fef3c7", padding: "2px 8px", borderRadius: 6 }}>Unassigned</span>
                     )}
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
                   <span style={{
-                    background: statusColor[c.status] + "18",
+                    background: statusColor[c.status] + "15",
                     color: statusColor[c.status],
-                    border: `1px solid ${statusColor[c.status]}40`,
-                    borderRadius: 100, padding: "4px 10px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap",
+                    border: `1px solid ${statusColor[c.status]}30`,
+                    borderRadius: 100, padding: "6px 14px", fontSize: 12, fontWeight: 800, whiteSpace: "nowrap",
                   }}>
                     {statusLabel[c.status]}
                   </span>
 
                   <button onClick={() => handleEscalateComplaint(c)} title="Escalate Priority to Critical" style={{
-                    padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: 700,
-                    border: "1.5px solid #fca5a5", color: "#dc2626", background: "#fff5f5", cursor: "pointer",
-                  }}>Escalate</button>
+                    padding: "8px 14px", borderRadius: 10, fontSize: 13, fontWeight: 800,
+                    border: "1.5px solid #fca5a5", color: "#dc2626", background: "#fff5f5", cursor: "pointer", transition: "all 0.2s"
+                  }}>🔥 Escalate</button>
 
                   <button onClick={() => setExpandedId(expandedId === c.id ? null : c.id)} style={{
-                    padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: 700,
-                    border: "1.5px solid #bfdbfe", color: "#1e40af", background: "#eff6ff", cursor: "pointer",
+                    padding: "8px 16px", borderRadius: 10, fontSize: 13, fontWeight: 800,
+                    border: expandedId === c.id ? "1.5px solid #cbd5e1" : "1.5px solid #bfdbfe",
+                    color: expandedId === c.id ? "#475569" : "#1e40af",
+                    background: expandedId === c.id ? "#f1f5f9" : "#eff6ff", cursor: "pointer", transition: "all 0.2s"
                   }}>
-                    {expandedId === c.id ? "Close" : "Manage"}
+                    {expandedId === c.id ? "Close Panel" : "Manage Issue"}
                   </button>
                 </div>
               </div>
 
               {expandedId === c.id && (
-                <div style={{ padding: "16px 20px 20px", background: "#f8fafc", borderTop: "1px solid #e2e8f0" }}>
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
-                    <div style={{ flex: 1, minWidth: 200 }}>
-                      <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>
+                <div style={{ padding: "24px 28px", background: "#f8fafc", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0" }}>
+                  <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginBottom: 20 }}>
+                    <div style={{ flex: 1, minWidth: 240 }}>
+                      <label style={{ display: "block", fontSize: 12, fontWeight: 800, color: "#475569", marginBottom: 8, letterSpacing: "0.02em", textTransform: "uppercase" }}>
                         Assign Maintenance Worker
                       </label>
                       <select
                         value={assignMap[c.id] ?? c.assignedTo?.id ?? ""}
                         onChange={(e) => setAssignMap((p) => ({ ...p, [c.id]: e.target.value }))}
                         style={{
-                          width: "100%", padding: "10px", border: "1.5px solid #cbd5e1",
-                          borderRadius: 8, fontSize: 13, background: "#fff", outline: "none",
+                          width: "100%", padding: "12px 14px", border: "1.5px solid #cbd5e1",
+                          borderRadius: 12, fontSize: 14, background: "#ffffff", outline: "none", cursor: "pointer",
                         }}
                       >
-                        <option value="">Select worker...</option>
+                        <option value="">-- Select Worker --</option>
                         {workers.map((w) => (
                           <option key={w.id} value={w.id}>
                             {w.name} ({w.department || "Staff"})
@@ -447,6 +462,7 @@ export default function AdminPage() {
                         ))}
                       </select>
                     </div>
+
 
                     <div style={{ flex: 1, minWidth: 200 }}>
                       <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 6 }}>

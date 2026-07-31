@@ -214,19 +214,20 @@ export default function WorkerPage() {
       </div>
 
       {/* Work Orders List */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         {displayed.length === 0 ? (
-          <div className="card" style={{ padding: "48px", textAlign: "center", color: "#94a3b8" }}>
-            <div style={{ fontWeight: 700, fontSize: 16, color: "#334155" }}>
+          <div className="glass-panel" style={{ padding: "60px 48px", textAlign: "center", color: "#94a3b8", borderRadius: 24, background: "#ffffff", border: "2px dashed #e2e8f0" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
+            <div style={{ fontWeight: 800, fontSize: 20, color: "#334155" }}>
               {activeTab === "stack"
-                ? "No unassigned tickets in your category stack!"
+                ? "Your unassigned stack is empty"
                 : activeTab === "assigned"
-                ? "You currently have no active assigned tasks."
-                : "No completed tasks yet."}
+                ? "You currently have no active assigned tasks"
+                : "No completed tasks yet"}
             </div>
-            <div style={{ fontSize: 13, marginTop: 4 }}>
+            <div style={{ fontSize: 14, marginTop: 8, color: "#64748b" }}>
               {activeTab === "stack"
-                ? "When students raise new issues matching your specialty, they will appear in this stack for you to accept."
+                ? "When students raise new issues matching your specialty, they will appear here for you to claim."
                 : "Accept a task from the available stack to start working."}
             </div>
           </div>
@@ -234,45 +235,46 @@ export default function WorkerPage() {
           displayed.map((c) => (
             <div
               key={c.id}
-              className="card"
+              className="glass-panel"
               style={{
-                padding: "20px", borderRadius: 16, background: "#fff",
+                padding: "24px", borderRadius: 20, background: "#ffffff",
                 borderLeft: `6px solid ${priorityColor[c.priority]}`,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                boxShadow: "0 10px 30px -10px rgba(0,0,0,0.08)",
+                transition: "transform 0.2s ease",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
+                <div style={{ flex: 1, minWidth: 300 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
                     <span style={{
-                      padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 800,
-                      textTransform: "uppercase", background: priorityColor[c.priority] + "20",
-                      color: priorityColor[c.priority],
+                      padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 800,
+                      textTransform: "uppercase", background: priorityColor[c.priority] + "15",
+                      color: priorityColor[c.priority], border: `1px solid ${priorityColor[c.priority]}30`,
                     }}>
                       {c.priority} Priority
                     </span>
                     <span style={{
-                      padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 800,
-                      textTransform: "uppercase", background: "#eff6ff",
-                      color: "#1d4ed8", border: "1px solid #bfdbfe",
+                      padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 800,
+                      textTransform: "uppercase", background: "#f1f5f9",
+                      color: "#475569", border: "1px solid #e2e8f0",
                     }}>
                       {c.category}
                     </span>
                     {!c.assignedToId && !c.assignedTo?.id && (
                       <span style={{
-                        padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 800,
+                        padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 800,
                         textTransform: "uppercase", background: "#fef3c7",
-                        color: "#d97706", border: "1px solid #fcd34d",
+                        color: "#d97706", border: "1px solid #fde68a",
                       }}>
                         Unassigned Stack
                       </span>
                     )}
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#64748b" }}>{c.id}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", marginLeft: "auto" }}>#{c.id.slice(0, 8)}</span>
                   </div>
-                  <h3 style={{ margin: "4px 0", fontSize: 17, fontWeight: 800, color: "#0f172a" }}>
+                  <h3 style={{ margin: "4px 0 8px", fontSize: 20, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.01em" }}>
                     {c.title}
                   </h3>
-                  <p style={{ margin: "4px 0 10px", color: "#475569", fontSize: 14 }}>
+                  <p style={{ margin: "0 0 16px", color: "#64748b", fontSize: 14, lineHeight: 1.5 }}>
                     {c.description}
                   </p>
                 </div>
@@ -284,35 +286,35 @@ export default function WorkerPage() {
 
               {/* Location & Reported By info */}
               <div style={{
-                background: "#f8fafc", borderRadius: 10, padding: "12px 14px",
-                margin: "12px 0", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12,
-                fontSize: 13, border: "1px solid #f1f5f9",
+                background: "#f8fafc", borderRadius: 16, padding: "16px 20px",
+                margin: "8px 0 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16,
+                border: "1px solid #f1f5f9",
               }}>
                 <div>
-                  <div style={{ color: "#94a3b8", fontSize: 11, fontWeight: 700 }}>LOCATION</div>
-                  <div style={{ fontWeight: 700, color: "#1e293b", marginTop: 2 }}>{c.location || "On-Campus"}</div>
+                  <div style={{ color: "#94a3b8", fontSize: 11, fontWeight: 800, letterSpacing: "0.05em" }}>LOCATION</div>
+                  <div style={{ fontWeight: 800, color: "#1e293b", marginTop: 4, fontSize: 14 }}>{c.location || "On-Campus"}</div>
                 </div>
                 <div>
-                  <div style={{ color: "#94a3b8", fontSize: 11, fontWeight: 700 }}>REPORTED BY</div>
-                  <div style={{ fontWeight: 700, color: "#1e293b", marginTop: 2 }}>
-                    {c.submittedBy.name} {c.submittedBy.rollNo ? `(${c.submittedBy.rollNo})` : ""}
+                  <div style={{ color: "#94a3b8", fontSize: 11, fontWeight: 800, letterSpacing: "0.05em" }}>REPORTED BY</div>
+                  <div style={{ fontWeight: 800, color: "#1e293b", marginTop: 4, fontSize: 14 }}>
+                    {c.submittedBy.name} <span style={{ color: "#64748b", fontWeight: 600 }}>{c.submittedBy.rollNo ? `(${c.submittedBy.rollNo})` : ""}</span>
                   </div>
                 </div>
               </div>
 
               {/* Attachments preview if present */}
               {c.attachments && c.attachments.length > 0 && (
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 6 }}>
-                    Attached Photos ({c.attachments.length}):
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: "#64748b", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                    Attached Photos ({c.attachments.length})
                   </div>
-                  <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ display: "flex", gap: 12 }}>
                     {c.attachments.map((imgUrl, idx) => (
-                      <a key={idx} href={`http://localhost:5000${imgUrl}`} target="_blank" rel="noreferrer">
+                      <a key={idx} href={`http://localhost:5000${imgUrl}`} target="_blank" rel="noreferrer" style={{ display: "block", borderRadius: 12, overflow: "hidden", border: "1px solid #cbd5e1" }}>
                         <img
                           src={`http://localhost:5000${imgUrl}`}
                           alt="Issue photo"
-                          style={{ width: 64, height: 64, borderRadius: 8, objectFit: "cover", border: "1px solid #cbd5e1" }}
+                          style={{ width: 80, height: 80, objectFit: "cover", display: "block" }}
                         />
                       </a>
                     ))}
@@ -322,26 +324,26 @@ export default function WorkerPage() {
 
               {/* Action Controls based on Tab */}
               {activeTab === "stack" ? (
-                <div style={{ background: "#f0fdf4", borderRadius: 12, padding: "14px", marginTop: 12, border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)", borderRadius: 16, padding: "16px 20px", marginTop: 12, border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>Available Task in your Trade Stack</div>
-                    <div style={{ fontSize: 12, color: "#166534", marginTop: 2 }}>Accept this ticket to assign it to yourself and start working.</div>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: "#166534" }}>Available Task in your Trade Stack</div>
+                    <div style={{ fontSize: 13, color: "#15803d", marginTop: 2, fontWeight: 500 }}>Accept this ticket to assign it to yourself and start working.</div>
                   </div>
                   <button
                     onClick={() => handleAcceptTask(c.id)}
                     disabled={updatingId === c.id}
                     style={{
-                      padding: "10px 20px", background: "#16a34a", color: "#fff",
-                      border: "none", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
-                      boxShadow: "0 2px 8px rgba(22, 163, 74, 0.3)",
+                      padding: "12px 24px", background: "#16a34a", color: "#fff",
+                      border: "none", borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: "pointer",
+                      boxShadow: "0 4px 14px rgba(22, 163, 74, 0.3)", transition: "all 0.2s ease",
                     }}
                   >
                     {updatingId === c.id ? "Accepting..." : "✓ Accept & Claim Task"}
                   </button>
                 </div>
               ) : activeTab === "assigned" ? (
-                <div style={{ background: "#eff6ff", borderRadius: 12, padding: "14px", marginTop: 12, border: "1px solid #bfdbfe" }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1e40af", marginBottom: 8 }}>
+                <div style={{ background: "linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)", borderRadius: 16, padding: "20px", marginTop: 12, border: "1px solid #bfdbfe" }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#3730a3", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.02em" }}>
                     Worker Actions & Updates
                   </div>
                   <input
@@ -350,18 +352,19 @@ export default function WorkerPage() {
                     value={noteMap[c.id] || ""}
                     onChange={(e) => setNoteMap({ ...noteMap, [c.id]: e.target.value })}
                     style={{
-                      width: "100%", padding: "10px 12px", border: "1.5px solid #cbd5e1",
-                      borderRadius: 8, fontSize: 13, outline: "none", boxSizing: "border-box", marginBottom: 10,
+                      width: "100%", padding: "14px 16px", border: "1.5px solid #c7d2fe",
+                      borderRadius: 12, fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 16,
+                      background: "#ffffff", transition: "border 0.2s",
                     }}
                   />
-                  <div style={{ display: "flex", gap: 10 }}>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                     {c.status !== "in_progress" && (
                       <button
                         onClick={() => handleStatusChange(c.id, "in_progress")}
                         disabled={updatingId === c.id}
                         style={{
-                          padding: "8px 16px", background: "#f59e0b", color: "#fff",
-                          border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
+                          padding: "10px 18px", background: "#ffffff", color: "#f59e0b",
+                          border: "1.5px solid #fcd34d", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
                         }}
                       >
                         Mark In Progress
@@ -371,23 +374,35 @@ export default function WorkerPage() {
                       onClick={() => handleStatusChange(c.id, "pending_approval")}
                       disabled={updatingId === c.id}
                       style={{
-                        padding: "8px 16px", background: "#4f46e5", color: "#fff",
-                        border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
+                        padding: "10px 18px", background: "#4f46e5", color: "#fff",
+                        border: "none", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
+                        boxShadow: "0 4px 12px rgba(79, 70, 229, 0.25)",
                       }}
                     >
                       {updatingId === c.id ? "Submitting..." : "Submit for Student Approval"}
                     </button>
                     <Link href={`/complaints/${c.id}`} style={{ textDecoration: "none", marginLeft: "auto" }}>
                       <button style={{
-                        padding: "8px 14px", background: "#fff", color: "#1e40af",
-                        border: "1px solid #bfdbfe", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer",
+                        padding: "10px 18px", background: "#ffffff", color: "#1e40af",
+                        border: "1.5px solid #bfdbfe", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
                       }}>
-                        View Full Details →
+                        View Full Details &rarr;
                       </button>
                     </Link>
                   </div>
                 </div>
-              ) : null}
+              ) : (
+                <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
+                  <Link href={`/complaints/${c.id}`} style={{ textDecoration: "none" }}>
+                    <button style={{
+                      padding: "10px 18px", background: "#f8fafc", color: "#475569",
+                      border: "1px solid #e2e8f0", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
+                    }}>
+                      View Ticket Record &rarr;
+                    </button>
+                  </Link>
+                </div>
+              )}
             </div>
           ))
         )}

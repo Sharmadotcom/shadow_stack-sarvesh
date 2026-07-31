@@ -162,37 +162,46 @@ export default function ComplaintDetailPage() {
       </Link>
 
       {/* Main Detail Header Card */}
-      <div className="card" style={{ padding: "28px 24px", marginTop: 16, borderLeft: `6px solid ${priorityColor[complaint.priority]}` }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-              <span style={{ fontSize: 13, fontWeight: 800, color: "#64748b" }}>{complaint.id}</span>
+      <div className="glass-panel" style={{ padding: "32px", marginTop: 24, borderRadius: 24, background: "#ffffff", borderLeft: `8px solid ${priorityColor[complaint.priority]}`, boxShadow: "0 12px 40px -12px rgba(0,0,0,0.08)", transition: "transform 0.2s ease" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 20, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 300 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+              <span style={{ fontSize: 14, fontWeight: 800, color: "#94a3b8", letterSpacing: "0.02em" }}>#{complaint.id.slice(0, 8)}</span>
               <span style={{
-                background: priorityColor[complaint.priority] + "20",
+                background: priorityColor[complaint.priority] + "15",
                 color: priorityColor[complaint.priority],
-                borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 800, textTransform: "uppercase",
+                borderRadius: 8, padding: "4px 10px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", border: `1px solid ${priorityColor[complaint.priority]}30`
               }}>
                 {complaint.priority} Priority
               </span>
             </div>
-            <h1 style={{ margin: "4px 0 8px", fontSize: 22, fontWeight: 800, color: "#0f172a" }}>
+            <h1 style={{ margin: "4px 0 12px", fontSize: 26, fontWeight: 900, color: "#0f172a", letterSpacing: "-0.01em", lineHeight: 1.3 }}>
               {complaint.title}
             </h1>
-            <div style={{ fontSize: 13, color: "#64748b" }}>
-              Category: <strong>{complaint.category}</strong> {complaint.location ? `· ${complaint.location}` : ""}
+            <div style={{ fontSize: 14, color: "#64748b", display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ background: "#f1f5f9", padding: "4px 12px", borderRadius: 8, fontWeight: 700, color: "#475569" }}>
+                {complaint.category}
+              </span>
+              {complaint.location && (
+                <>
+                  <span style={{ color: "#cbd5e1" }}>•</span>
+                  <span style={{ fontWeight: 600 }}>{complaint.location}</span>
+                </>
+              )}
             </div>
           </div>
 
           <div style={{ textAlign: "right" }}>
             <span style={{
-              background: statusColor[complaint.status] + "20",
+              background: statusColor[complaint.status] + "15",
               color: statusColor[complaint.status],
-              border: `1.5px solid ${statusColor[complaint.status]}50`,
-              borderRadius: 100, padding: "6px 16px", fontSize: 13, fontWeight: 800, display: "inline-block",
+              border: `1.5px solid ${statusColor[complaint.status]}30`,
+              borderRadius: 100, padding: "8px 20px", fontSize: 13, fontWeight: 800, display: "inline-block",
+              boxShadow: `0 4px 12px ${statusColor[complaint.status]}15`
             }}>
               {statusLabel[complaint.status]}
             </span>
-            <div style={{ marginTop: 10 }}>
+            <div style={{ marginTop: 16 }}>
               <SLATimer deadline={complaint.slaDeadline} status={complaint.status} />
             </div>
           </div>
@@ -200,49 +209,51 @@ export default function ComplaintDetailPage() {
 
         {/* Student Close Grievance Action Button */}
         {isStudentOwner && !isClosed && (
-          <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px dashed #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ fontSize: 13, color: "#475569" }}>
-              Is your issue fixed? You can mark this grievance as closed:
+          <div style={{ marginTop: 24, padding: "20px 24px", background: "#f0fdf4", borderRadius: 16, border: "1px solid #bbf7d0", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+            <div style={{ fontSize: 14, color: "#166534", fontWeight: 600 }}>
+              Is your issue fully resolved? You can mark this grievance as closed:
             </div>
             <button
               onClick={handleCloseGrievance}
               disabled={closing}
               style={{
-                padding: "9px 18px", background: "#10b981", color: "#ffffff",
-                border: "none", borderRadius: 10, fontWeight: 800, fontSize: 13,
-                cursor: "pointer", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.25)",
+                padding: "12px 24px", background: "#16a34a", color: "#ffffff",
+                border: "none", borderRadius: 12, fontWeight: 800, fontSize: 14,
+                cursor: "pointer", boxShadow: "0 4px 14px rgba(22, 163, 74, 0.3)", transition: "all 0.2s"
               }}
             >
-              {closing ? "Closing..." : "Close Grievance"}
+              {closing ? "Closing..." : "✓ Close Grievance"}
             </button>
           </div>
         )}
 
-        <div style={{ borderTop: "1px solid #f1f5f9", margin: "18px 0 16px" }} />
+        <div style={{ borderTop: "2px dashed #f1f5f9", margin: "28px 0" }} />
 
         {/* Description */}
         <div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", marginBottom: 6 }}>
+          <div style={{ fontSize: 12, fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", marginBottom: 12, letterSpacing: "0.05em" }}>
             Issue Description
           </div>
-          <p style={{ margin: 0, color: "#334155", fontSize: 15, lineHeight: 1.6 }}>
+          <p style={{ margin: 0, color: "#334155", fontSize: 16, lineHeight: 1.7, background: "#f8fafc", padding: "20px", borderRadius: 16, border: "1px solid #f1f5f9" }}>
             {complaint.description}
           </p>
         </div>
 
         {/* Uploaded Attachments */}
         {complaint.attachments && complaint.attachments.length > 0 && (
-          <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", marginBottom: 8 }}>
+          <div style={{ marginTop: 28 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", marginBottom: 12, letterSpacing: "0.05em" }}>
               Uploaded Photos ({complaint.attachments.length})
             </div>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
               {complaint.attachments.map((imgUrl, i) => (
-                <a key={i} href={`http://localhost:5000${imgUrl}`} target="_blank" rel="noreferrer">
+                <a key={i} href={`http://localhost:5000${imgUrl}`} target="_blank" rel="noreferrer" style={{ display: "block", borderRadius: 16, overflow: "hidden", border: "1px solid #cbd5e1", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
                   <img
                     src={`http://localhost:5000${imgUrl}`}
                     alt={`Attachment ${i + 1}`}
-                    style={{ width: 100, height: 100, borderRadius: 10, objectFit: "cover", border: "1.5px solid #cbd5e1" }}
+                    style={{ width: 120, height: 120, objectFit: "cover", display: "block", transition: "transform 0.2s" }}
+                    onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                    onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
                   />
                 </a>
               ))}
@@ -252,18 +263,28 @@ export default function ComplaintDetailPage() {
 
         {/* Assigned Technician Banner */}
         <div style={{
-          background: "#f8fafc", borderRadius: 12, padding: "14px 18px", marginTop: 20,
+          background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)", borderRadius: 16, padding: "20px 24px", marginTop: 32,
           border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase" }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               Assigned Maintenance Technician
             </div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", marginTop: 2 }}>
-              {complaint.assignedTo ? complaint.assignedTo.name : "Unassigned (Pending Allocation)"}
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#0f172a", marginTop: 6, display: "flex", alignItems: "center", gap: 10 }}>
+              {complaint.assignedTo ? (
+                <>
+                  <span style={{ fontSize: 20 }}>👨‍🔧</span>
+                  {complaint.assignedTo.name}
+                </>
+              ) : (
+                <span style={{ color: "#d97706", display: "inline-flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#d97706" }} />
+                  Unassigned (Pending Allocation)
+                </span>
+              )}
             </div>
             {complaint.assignedTo?.department && (
-              <div style={{ fontSize: 12, color: "#2563eb" }}>{complaint.assignedTo.department}</div>
+              <div style={{ fontSize: 13, color: "#475569", marginTop: 4, fontWeight: 500, marginLeft: 34 }}>{complaint.assignedTo.department}</div>
             )}
           </div>
         </div>
@@ -271,72 +292,73 @@ export default function ComplaintDetailPage() {
 
       {/* STUDENT APPROVAL CARD (When Worker Completed Work & Status is Pending Approval) */}
       {isStudentOwner && complaint.status === "pending_approval" && (
-        <div className="card" style={{ padding: "24px", marginTop: 20, background: "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)", border: "1.5px solid #c7d2fe" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#3730a3", marginBottom: 4 }}>
+        <div className="glass-panel" style={{ padding: "32px", marginTop: 24, borderRadius: 24, background: "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)", border: "1.5px solid #c7d2fe", boxShadow: "0 12px 30px -10px rgba(79, 70, 229, 0.2)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 20 }}>
+            <div style={{ flex: 1, minWidth: 280 }}>
+              <div style={{ fontSize: 20, fontWeight: 900, color: "#3730a3", marginBottom: 8, letterSpacing: "-0.01em" }}>
                 Worker Completed Repair — Approval Required
               </div>
-              <div style={{ fontSize: 13, color: "#4338ca" }}>
-                The technician completed the repair and requested your approval. Are you satisfied with the work done?
+              <div style={{ fontSize: 14, color: "#4338ca", lineHeight: 1.5 }}>
+                The technician completed the repair and requested your approval. Please review the work. Are you satisfied with the resolution?
               </div>
             </div>
             <SLATimer deadline={complaint.slaDeadline} status={complaint.status} approvalRequestedAt={complaint.approvalRequestedAt} />
           </div>
 
-          <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+          <div style={{ display: "flex", gap: 16, marginTop: 24, flexWrap: "wrap" }}>
             <button
               type="button"
               onClick={handleApprove}
               disabled={submittingApproval}
               style={{
-                padding: "12px 24px", background: "#16a34a", color: "#ffffff",
-                border: "none", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(22, 163, 74, 0.3)",
+                padding: "14px 28px", background: "#16a34a", color: "#ffffff",
+                border: "none", borderRadius: 12, fontWeight: 800, fontSize: 15, cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(22, 163, 74, 0.3)", flex: 1, minWidth: 200, transition: "all 0.2s"
               }}
             >
-              {submittingApproval ? "Processing..." : "✓ Satisfied (Close Ticket)"}
+              {submittingApproval ? "Processing..." : "✓ Yes, I am Satisfied (Close Ticket)"}
             </button>
             <button
               type="button"
               onClick={() => setShowRejectionForm(!showRejectionForm)}
               disabled={submittingApproval}
               style={{
-                padding: "12px 24px", background: "#dc2626", color: "#ffffff",
-                border: "none", borderRadius: 10, fontWeight: 800, fontSize: 14, cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                padding: "14px 28px", background: "#ffffff", color: "#dc2626",
+                border: "2px solid #fecaca", borderRadius: 12, fontWeight: 800, fontSize: 15, cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(220, 38, 38, 0.05)", flex: 1, minWidth: 200, transition: "all 0.2s"
               }}
             >
-              ✕ Unsatisfied (Request Re-work)
+              ✕ No, Unsatisfied (Request Re-work)
             </button>
           </div>
 
           {showRejectionForm && (
-            <form onSubmit={handleReject} style={{ marginTop: 18, background: "#ffffff", padding: "16px", borderRadius: 12, border: "1px solid #fca5a5" }}>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#991b1b", marginBottom: 6 }}>
-                Please state why you are unsatisfied with the work done: *
+            <form onSubmit={handleReject} style={{ marginTop: 24, background: "#ffffff", padding: "24px", borderRadius: 16, border: "2px solid #fca5a5", boxShadow: "0 10px 25px -5px rgba(220, 38, 38, 0.1)" }}>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 800, color: "#991b1b", marginBottom: 12 }}>
+                Please state why you are unsatisfied with the work done: <span style={{ color: "#ef4444" }}>*</span>
               </label>
               <textarea
                 required
-                rows={3}
+                rows={4}
                 placeholder="Explain what is still broken or incomplete (e.g. 'Water pipe still leaks under high pressure')..."
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 style={{
-                  width: "100%", padding: "10px 12px", border: "1.5px solid #f87171",
-                  borderRadius: 8, fontSize: 13, outline: "none", boxSizing: "border-box", marginBottom: 10,
-                  fontFamily: "inherit",
+                  width: "100%", padding: "16px", border: "1.5px solid #f87171",
+                  borderRadius: 12, fontSize: 15, outline: "none", boxSizing: "border-box", marginBottom: 16,
+                  fontFamily: "inherit", background: "#fef2f2", transition: "border 0.2s"
                 }}
               />
               <button
                 type="submit"
                 disabled={submittingApproval}
                 style={{
-                  padding: "10px 18px", background: "#dc2626", color: "#ffffff",
-                  border: "none", borderRadius: 8, fontWeight: 800, fontSize: 13, cursor: "pointer",
+                  padding: "14px 24px", background: "#dc2626", color: "#ffffff",
+                  border: "none", borderRadius: 12, fontWeight: 800, fontSize: 15, cursor: "pointer",
+                  boxShadow: "0 4px 14px rgba(220, 38, 38, 0.3)", width: "100%", transition: "all 0.2s"
                 }}
               >
-                {submittingApproval ? "Submitting..." : "Submit Reason & Return Ticket to Stack"}
+                {submittingApproval ? "Submitting..." : "Submit Reason & Return Ticket to Worker Stack"}
               </button>
             </form>
           )}
@@ -345,9 +367,9 @@ export default function ComplaintDetailPage() {
 
       {/* SERVICE RATING CARD (Available when Resolved or Closed) */}
       {(complaint.status === "resolved" || complaint.status === "closed") && (
-        <div className="card" style={{ padding: "24px", marginTop: 20, background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)", border: "1.5px solid #fde68a" }}>
-          <div style={{ fontSize: 17, fontWeight: 800, color: "#92400e", marginBottom: 4, display: "flex", alignItems: "center", gap: 8 }}>
-            Service Resolution Rating
+        <div className="glass-panel" style={{ padding: "32px", marginTop: 24, borderRadius: 24, background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)", border: "1.5px solid #fde68a", boxShadow: "0 12px 30px -10px rgba(245, 158, 11, 0.2)" }}>
+          <div style={{ fontSize: 20, fontWeight: 900, color: "#92400e", marginBottom: 8, display: "flex", alignItems: "center", gap: 10, letterSpacing: "-0.01em" }}>
+            <span style={{ fontSize: 24 }}>⭐</span> Service Resolution Rating
           </div>
           <div style={{ fontSize: 13, color: "#b45309", marginBottom: 14 }}>
             Rate your satisfaction with the maintenance team's repair service:

@@ -536,126 +536,158 @@ export default function HomePage() {
       </div>
 
       {/* KPI Stats Grid */}
-      <div className="stats-grid" style={{ marginBottom: 28 }}>
+      <div className="stats-grid" style={{ marginBottom: 32, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
         {[
-          { label: "Total Complaints", value: stats.total, color: "#6366f1" },
-          { label: "Open & Pending", value: stats.open + stats.inProgress, color: "#3b82f6" },
-          { label: "Resolved & Closed", value: stats.resolved, color: "#10b981" },
-          { label: "Escalated Issues", value: stats.escalated, color: "#ef4444" },
+          { label: "Total Reported", value: stats.total, color: "#6366f1", bg: "linear-gradient(135deg, #eef2ff 0%, #ffffff 100%)" },
+          { label: "Active & Pending", value: stats.open + stats.inProgress, color: "#3b82f6", bg: "linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)" },
+          { label: "Resolved", value: stats.resolved, color: "#10b981", bg: "linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%)" },
+          { label: "Escalated", value: stats.escalated, color: "#ef4444", bg: "linear-gradient(135deg, #fef2f2 0%, #ffffff 100%)" },
         ].map((s) => (
-          <div key={s.label} className="card" style={{
-            padding: "20px 16px", textAlign: "center",
-            borderTop: `4px solid ${s.color}`,
+          <div key={s.label} className="glass-panel" style={{
+            padding: "24px 20px", textAlign: "center", borderRadius: 20,
+            background: s.bg, border: "1px solid rgba(0,0,0,0.04)",
+            boxShadow: "0 10px 25px -5px rgba(0,0,0,0.02)", transition: "transform 0.2s ease"
           }}>
-            <div style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 12, color: "#64748b", marginTop: 3, fontWeight: 600 }}>{s.label}</div>
+            <div style={{ fontSize: 36, fontWeight: 900, color: s.color, lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 13, color: "#64748b", marginTop: 8, fontWeight: 700, letterSpacing: "0.02em" }}>{s.label}</div>
           </div>
         ))}
       </div>
 
       {/* Pending Approval Alert Banner */}
       {pendingApprovalComplaints.length > 0 && (
-        <div className="card" style={{
-          background: "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)", border: "1.5px solid #c7d2fe",
-          borderRadius: 16, padding: "20px 24px", marginBottom: 28,
+        <div style={{
+          background: "linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)", borderRadius: 24, padding: "2px", marginBottom: 32,
+          boxShadow: "0 12px 30px -10px rgba(79, 70, 229, 0.4)"
         }}>
-          <div style={{ fontWeight: 800, color: "#3730a3", marginBottom: 12, fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}>
-            Approval Required on Completed Work ({pendingApprovalComplaints.length})
-          </div>
-          {pendingApprovalComplaints.map((c) => (
-            <Link key={c.id} href={`/complaints/${c.id}`} style={{ textDecoration: "none" }}>
-              <div style={{
-                background: "#ffffff", borderRadius: 12, padding: "14px 18px",
-                marginBottom: 8, borderLeft: "4px solid #4f46e5", boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-                display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12,
-              }}>
-                <div>
-                  <div style={{ fontWeight: 800, fontSize: 15, color: "#0f172a" }}>{c.title}</div>
-                  <div style={{ fontSize: 12, color: "#475569", marginTop: 4 }}>
-                    {c.id} · Technician: <strong>{c.assignedTo?.name || "Maintenance Staff"}</strong> · Click to review work & respond
-                  </div>
-                </div>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <SLATimer deadline={c.slaDeadline} status={c.status} approvalRequestedAt={c.approvalRequestedAt} />
-                  <button style={{
-                    padding: "8px 16px", background: "#4f46e5", color: "#fff",
-                    border: "none", borderRadius: 8, fontWeight: 800, fontSize: 13, cursor: "pointer",
+          <div style={{ background: "#ffffff", borderRadius: 22, padding: "24px", height: "100%" }}>
+            <div style={{ fontWeight: 800, color: "#3730a3", marginBottom: 16, fontSize: 18, display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: "50%", background: "#e0e7ff", color: "#4f46e5" }}>!</span>
+              Action Required: Approval Needed ({pendingApprovalComplaints.length})
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {pendingApprovalComplaints.map((c) => (
+                <Link key={c.id} href={`/complaints/${c.id}`} style={{ textDecoration: "none" }}>
+                  <div style={{
+                    background: "#f8fafc", borderRadius: 16, padding: "16px 20px", border: "1px solid #e2e8f0",
+                    display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16,
+                    transition: "all 0.2s ease", cursor: "pointer",
                   }}>
-                    Review & Respond →
-                  </button>
-                </div>
-              </div>
-            </Link>
-          ))}
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: 16, color: "#0f172a" }}>{c.title}</div>
+                      <div style={{ fontSize: 13, color: "#64748b", marginTop: 6 }}>
+                        Ticket #{c.id.slice(0, 8)} · Technician: <strong style={{ color: "#334155" }}>{c.assignedTo?.name || "Staff"}</strong>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      <SLATimer deadline={c.slaDeadline} status={c.status} approvalRequestedAt={c.approvalRequestedAt} />
+                      <button style={{
+                        padding: "10px 20px", background: "#4f46e5", color: "#fff",
+                        border: "none", borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: "pointer",
+                        boxShadow: "0 4px 12px rgba(79, 70, 229, 0.25)"
+                      }}>
+                        Review Work &rarr;
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
       {/* Urgent Alert Banner */}
       {urgent.length > 0 && (
-        <div className="card pulse-alert" style={{
-          background: "#fff5f5", border: "1.5px solid #fca5a5",
-          borderRadius: 16, padding: "20px 24px", marginBottom: 28,
+        <div style={{
+          background: "linear-gradient(135deg, #ef4444 0%, #991b1b 100%)", borderRadius: 24, padding: "2px", marginBottom: 32,
+          boxShadow: "0 12px 30px -10px rgba(239, 68, 68, 0.4)"
         }}>
-          <div style={{ fontWeight: 800, color: "#dc2626", marginBottom: 12, fontSize: 15, display: "flex", alignItems: "center", gap: 8 }}>
-            High Priority / Escalated Issues ({urgent.length})
+          <div style={{ background: "#ffffff", borderRadius: 22, padding: "24px", height: "100%" }}>
+            <div style={{ fontWeight: 800, color: "#dc2626", marginBottom: 16, fontSize: 18, display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: "50%", background: "#fee2e2", color: "#ef4444" }}>🚨</span>
+              High Priority / Escalated Issues ({urgent.length})
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {urgent.map((c) => (
+                <Link key={c.id} href={`/complaints/${c.id}`} style={{ textDecoration: "none" }}>
+                  <div style={{
+                    background: "#f8fafc", borderRadius: 16, padding: "16px 20px", border: "1px solid #e2e8f0",
+                    display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16,
+                  }}>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: 16, color: "#0f172a" }}>{c.title}</div>
+                      <div style={{ fontSize: 13, color: "#64748b", marginTop: 6 }}>
+                        {c.id.slice(0, 8)} {c.location ? `· ${c.location}` : ""} · Priority: <strong style={{ color: "#dc2626" }}>{c.priority.toUpperCase()}</strong>
+                      </div>
+                    </div>
+                    <button style={{
+                      padding: "8px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca",
+                      borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer",
+                    }}>
+                      View Issue
+                    </button>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
-          {urgent.map((c) => (
-            <Link key={c.id} href={`/complaints/${c.id}`} style={{ textDecoration: "none" }}>
-              <div style={{
-                background: "#ffffff", borderRadius: 12, padding: "14px 18px",
-                marginBottom: 8, borderLeft: "4px solid #ef4444", boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-              }}>
-                <div style={{ fontWeight: 700, fontSize: 15, color: "#0f172a" }}>{c.title}</div>
-                <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
-                  {c.id} {c.location ? `· ${c.location}` : ""} · Priority: <strong style={{ color: "#dc2626" }}>{c.priority.toUpperCase()}</strong>
-                </div>
-              </div>
-            </Link>
-          ))}
         </div>
       )}
 
       {/* Recent Complaints Card */}
-      <div className="card" style={{ padding: "24px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div style={{ fontWeight: 800, fontSize: 18, color: "#0f172a" }}>Recent Complaints</div>
-          <Link href="/complaints" style={{ textDecoration: "none", color: "#1e40af", fontWeight: 700, fontSize: 13 }}>
-            View All →
+      <div className="glass-panel" style={{ padding: "32px", borderRadius: 24, background: "#ffffff", boxShadow: "0 12px 40px -12px rgba(0,0,0,0.08)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+          <div style={{ fontWeight: 800, fontSize: 22, color: "#0f172a", letterSpacing: "-0.01em" }}>Recent Complaints</div>
+          <Link href="/complaints" style={{ textDecoration: "none", color: "#2563eb", fontWeight: 800, fontSize: 14, background: "#eff6ff", padding: "8px 16px", borderRadius: 12 }}>
+            View All History &rarr;
           </Link>
         </div>
 
         {dashboardLoading ? (
-          <div style={{ textAlign: "center", padding: "30px 0", color: "#94a3b8" }}>Loading complaint updates...</div>
+          <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8", fontWeight: 600 }}>Syncing recent activity...</div>
         ) : recent.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px 0", color: "#94a3b8" }}>
-            <div style={{ fontWeight: 700, color: "#334155" }}>No active complaints logged</div>
-            <div style={{ fontSize: 13, marginTop: 4 }}>Click <strong>Report a New Issue</strong> to log a maintenance request.</div>
+          <div style={{ textAlign: "center", padding: "60px 0", color: "#94a3b8", background: "#f8fafc", borderRadius: 16, border: "2px dashed #e2e8f0" }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>📝</div>
+            <div style={{ fontWeight: 800, color: "#334155", fontSize: 18 }}>No active complaints found</div>
+            <div style={{ fontSize: 14, marginTop: 6 }}>Click <strong>Report a New Issue</strong> to log a maintenance request.</div>
           </div>
         ) : (
-          recent.map((c) => (
-            <Link key={c.id} href={`/complaints/${c.id}`} style={{ textDecoration: "none" }}>
-              <div className="complaint-row" style={{
-                padding: "16px 0", borderBottom: "1px solid #f1f5f9",
-                display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12,
-              }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: "#0f172a" }}>{c.title}</div>
-                  <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>
-                    {c.id} · Category: <strong>{c.category}</strong> · {getTimeAgo(c.createdAt)}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {recent.map((c) => (
+              <Link key={c.id} href={`/complaints/${c.id}`} style={{ textDecoration: "none" }}>
+                <div style={{
+                  padding: "16px 20px", border: "1px solid #f1f5f9", borderRadius: 16, background: "#fdfdfd",
+                  display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16,
+                  transition: "all 0.2s ease", cursor: "pointer",
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.background = '#f8fafc'; }}
+                onMouseOut={(e) => { e.currentTarget.style.borderColor = '#f1f5f9'; e.currentTarget.style.background = '#fdfdfd'; }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                    <div style={{ width: 48, height: 48, borderRadius: 12, background: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+                      {c.category === "electrician" ? "⚡" : c.category === "plumber" ? "💧" : "🔧"}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: 16, color: "#1e293b" }}>{c.title}</div>
+                      <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>
+                        Ticket #{c.id.slice(0, 8)} · <strong>{c.category}</strong> · {getTimeAgo(c.createdAt)}
+                      </div>
+                    </div>
                   </div>
+                  <span style={{
+                    background: statusColor[c.status] + "15",
+                    color: statusColor[c.status],
+                    border: `1.5px solid ${statusColor[c.status]}30`,
+                    borderRadius: 100, padding: "6px 16px",
+                    fontSize: 12, fontWeight: 800, whiteSpace: "nowrap", flexShrink: 0,
+                  }}>
+                    {statusLabel[c.status]}
+                  </span>
                 </div>
-                <span style={{
-                  background: statusColor[c.status] + "18",
-                  color: statusColor[c.status],
-                  border: `1px solid ${statusColor[c.status]}40`,
-                  borderRadius: 100, padding: "5px 14px",
-                  fontSize: 12, fontWeight: 700, whiteSpace: "nowrap", flexShrink: 0,
-                }}>
-                  {statusLabel[c.status]}
-                </span>
-              </div>
-            </Link>
-          ))
+              </Link>
+            ))}
+          </div>
         )}
       </div>
     </div>
